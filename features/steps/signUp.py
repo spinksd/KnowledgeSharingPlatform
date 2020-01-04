@@ -5,7 +5,7 @@ from selenium.webdriver.common.alert import Alert
 from selenium.common.exceptions import NoSuchElementException
 
 @given('I have the url for the signup page of the platform')
-def set_signup_url(context):
+def set_sign_up_url(context):
     context.url = 'http://localhost:8000/signup'
 
 @given('I am not logged in')
@@ -15,7 +15,7 @@ def check_not_logged_in(context):
     except NoSuchElementException:
         pass
 
-@given('And I am logged in')
+@given('I am logged in')
 def check_logged_in(context):
     try:
         greeting_msg = context.browser.find_element_by_name('user_greeting')
@@ -23,9 +23,9 @@ def check_logged_in(context):
         raise NoSuchElementException
 
 @given('I am on the signup page of the platform')
-def go_to_signup_page(context):
-    set_signup_url()
-    go_to_page()
+def go_to_sign_up_page(context):
+    set_sign_up_url(context)
+    go_to_page(context)
 
 @given('I enter valid details into the signup form')
 def enter_sign_up_form_details(context):
@@ -45,7 +45,7 @@ def enter_sign_up_form_details(context):
     '''
 
 @given('I enter invalid details into the signup form')
-def enter_sign_up_form_details(context):
+def enter_invalid_sign_up_form_details(context):
     form = context.browser.find_element_by_name('signup_form')
 
     context.browser.get_element(form, name="forename").send_keys('@3139amcda?.,z')
@@ -56,7 +56,7 @@ def enter_sign_up_form_details(context):
 
 @given('the email I have entered is already in use by an account')
 def duplicate_account(context):
-    submit_signup_form()
+    submit_sign_up_form()
     enter_sign_up_form_details()
 
 @when('I enter the url into my web browser')
@@ -69,14 +69,14 @@ def go_to_page(context):
     assert response.statuscode == 200
     
 @when('I press submit')
-def submit_signup_form(context):
+def submit_sign_up_form(context):
     form = context.browser.find_element_by_name('signup_form')
     context.get_element(form, name='submit').click()
     #context.browser.find_element_by_name('submit_signup').click()
 
 @when('I click on the login button')
 def click_login_button(context):
-    context.browser.find_element_by_name('navbar_login').click()
+    context.browser.find_element_by_name('login_button').click()
 
 @when('I click on the \'forgotten password\' button/link')
 def click_forgotten_password_button(context):
@@ -121,7 +121,7 @@ def confirm_user_not_created(context):
     '''
 
 @then('I should be presented with a message saying \'Your details are invalid, please try again.\'')
-def check_user_creation_message(context):
+def check_user_creation_error_message(context):
     alert_text = Alert(context.browser).text
     #alert = context.browser.find_element_by_name('alert')   
     assert alert_text == 'Your details are invalid, please try again.'

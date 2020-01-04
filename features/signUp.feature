@@ -53,10 +53,3 @@ Feature: SignUpPage
     And I am not logged in
     When I click on the login button
     Then I should be directed to the login page
-
-  Scenario: Click on 'forgotten password?' button
-
-   Given I am on the signup page of the platform
-   And I am not logged in
-   When I click on the 'forgotten password' button/link
-   Then I should be directed to the forgotten password page
