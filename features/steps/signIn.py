@@ -92,7 +92,7 @@ def confirm_not_logged_in(context):
 
 @then('I should be presented with a message saying \'Your credentials are invalid, please try again.\'')
 def check_user_creation_message(context):
-    alert_text = Alert(context.browser).text
+    alert_text = Alert(context.browser).textalert
     #alert = context.browser.find_element_by_name('alert')   
     assert alert_text == 'Your credentials are invalid, please try again.'
 

@@ -1,0 +1,16 @@
+{% extends "website/base.html" %}
+
+{% block content %}
+    {% for page in pages %}
+        <article class="media content-section">
+          <div class="media-body">
+              <div class="article-metadata">
+                <a class="mr-2" href="#">{{ page.author }}</a>
+                <small class="text-muted">{{ page.date_posted }}</small>
+              </div>
+              <h2><a class="article-title" href="#">{{ page.title }}</a></h2>
+              <p class="article-content">{{ page.content }}</p>
+            </div>
+        </article>
+    {% endfor %}
+{% endblock content %}
