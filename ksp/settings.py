@@ -124,6 +124,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Telling Django the root path to store files. I.e. any media will be stored under this directory.
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# This sets how I can access the image in the browser/the html I've created
+MEDIA_URL = '/media/'
+
 # Crispy default to bootstrap2 CSS styling which is quite old. Setting this gets it to use later version of bootstrap.
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
