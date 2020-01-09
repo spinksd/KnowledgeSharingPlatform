@@ -1,4 +1,5 @@
 {% extends "website/base.html" %}
+<!-- Load crispy form tags so I can use them for styling -->
 {% load crispy_forms_tags %}
 {% block content %}
     <div class="content-section">
@@ -9,6 +10,20 @@
           <p class="text-secondary">{{ user.email }}</p>
         </div>
       </div>
-      <!-- FORM HERE -->
+      <!-- Enctype must be included here to ensure image data is process properly -->
+      <form method="POST" enctype="multipart/form-data">
+        <!-- Add csrf token for security (prevents cross-site request forgery) -->
+        {% csrf_token %}
+        <!-- bootstrap class -->
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Profile Information</legend>
+            <!-- Vertical bar specifies that I want to use a filter. The crispy filter improves the styling (e.g. adds asterisks to required fields, labels form in a neat way, error messages presented neatly etc.) -->
+            {{ user_form|crispy }}
+            {{ profile_form|crispy }}
+        </fieldset>
+        <div class="form-group">
+            <button class="btn btn-outline-info" type="submit">Update</button>
+        </div>
+      </form>
     </div>
 {% endblock content %}

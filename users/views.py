@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegisterForm
+from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
+
 
 def register(request):
     if request.method == 'POST':
@@ -27,4 +28,12 @@ def register(request):
 # Adding login_required decorater to the profile view - This forces a user to be logged in before being able to access this page.
 @login_required
 def profile(request):
-    return render(request, 'users/profile.html')
+    user_form = UserUpdateForm()
+    profile_form = ProfileUpdateForm()
+
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form
+    }
+
+    return render(request, 'users/profile.html', context)
