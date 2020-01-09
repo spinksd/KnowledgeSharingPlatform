@@ -37,8 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Project created/added apps
     'behave_django',
     'website.apps.WebsiteConfig',
+    'users.apps.UsersConfig',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -120,3 +123,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Crispy default to bootstrap2 CSS styling which is quite old. Setting this gets it to use later version of bootstrap.
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+# Set url to direct user to when they log in (default Django implementation using auth class directs user to http://localhost:8000/accounts/profile/)
+LOGIN_REDIRECT_URL = 'website-home'
+
+# Set url to direct user to login page when attempting to access a page where they must be logged in
+LOGIN_URL = 'login'
