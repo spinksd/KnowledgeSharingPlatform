@@ -1,0 +1,26 @@
+{% extends "website/base.html" %}
+<!-- Load crispy form tags so I can use them for styling -->
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="content-section">
+        <form method="POST">
+            <!-- Add csrf token for security (prevents cross-site request forgery) -->
+            {% csrf_token %}
+            <!-- bootstrap class -->
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Sign Up</legend>
+                <!-- Vertical bar specifies that I want to use a filter. The crispy filter improves the styling (e.g. adds asterisks to required fields, labels form in a neat way, error messages presented neatly etc.) -->
+                {{ form|crispy }}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Sign Up</button>
+            </div>
+        </form>
+        <!--padding top 3-->
+        <div class="border-top pt-3">
+            <small class="text-muted">
+                Already have an account? <a class="ml-2" href="{% url 'login' %}">Sign In</a>
+            </small>
+        </div>
+    </div>
+{% endblock content %}
