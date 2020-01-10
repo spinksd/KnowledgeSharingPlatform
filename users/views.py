@@ -1,6 +1,8 @@
+
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 
 
@@ -25,11 +27,27 @@ def register(request):
         form = UserRegisterForm()
     return render(request, 'users/register.html', {'form': form})
 
-# Adding login_required decorater to the profile view - This forces a user to be logged in before being able to access this page.
+# Adding login_required decorator to the profile view - This forces a user to be logged in before being able to access this page.
 @login_required
 def profile(request):
-    user_form = UserUpdateForm()
-    profile_form = ProfileUpdateForm()
+    # POST method ran when user has potentially entered new data so pass in the POST data
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        # Profile also has image data attached to it, so make sure to load FILES data
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+        # If data provided by user if valid, save form data to database (Update user's details)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, f'Your account has been updated!')
+            # Redirect user to profile page
+            return redirect('profile')
+
+    # Else it's a GET request, so load forms with user's current details populated
+    else:
+        # Print out forms - parameter specifies the instance that contains the user's current data (e.g. present user's current email to them in user update form)
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = ProfileUpdateForm(instance=request.user.profile)
 
     context = {
         'user_form': user_form,
