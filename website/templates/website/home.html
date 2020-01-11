@@ -11,7 +11,8 @@
                 <!-- Above prints the date posted in format: Month (F) Day number (d), Year (Y)
                      as per documentation: https://docs.djangoproject.com/en/2.0/ref/templates/builtins/#date -->
               </div>
-              <h2><a class="article-title" href="#">{{ page.title }}</a></h2>
+              <!-- Link page title to page url by passing in primary key of the page to url routing -->
+              <h2><a class="article-title" href="{% url 'published-page' page.id %}">{{ page.title }}</a></h2>
               <p class="article-content">{{ page.content }}</p>
             </div>
         </article>

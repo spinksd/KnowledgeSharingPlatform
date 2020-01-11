@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 # Create class/model for a page
 class Page(models.Model):
@@ -18,3 +19,8 @@ class Page(models.Model):
     # Updated representation: <QuerySet [<Page: Page 1>]>
     def __str__(self):
         return self.title
+
+    # Reverse simply returns the full url as a string - then I can use this for redirection (e.g. after user has created a page)
+    def get_absolute_url(self):
+        # Return the full url of the created page using it's primary key
+        return reverse('published-page', kwargs={'pk': self.pk})
