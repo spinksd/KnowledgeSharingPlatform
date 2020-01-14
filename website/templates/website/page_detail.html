@@ -1,11 +1,10 @@
 {% extends "website/base.html" %}
-
 {% block content %}
     <article class="media content-section">
       <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}">
       <div class="media-body">
         <div class="article-metadata">
-          <a class="mr-2" href="#">{{ object.author }}</a>
+          <a class="mr-2" href="{% url 'user-pages' object.author.username %}">{{ object.author }}</a>
           <small class="text-muted">{{ object.date_posted|date:"F d, Y" }}</small>
           <!-- Above prints the date posted in format: Month (F) Day number (d), Year (Y)
                as per documentation: https://docs.djangoproject.com/en/2.0/ref/templates/builtins/#date -->

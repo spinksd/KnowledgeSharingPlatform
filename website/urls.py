@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import PageListView, PageDetailView, PageCreateView, PageUpdateView, PageDeleteView
+from .views import PageListView, PageDetailView, PageCreateView, PageUpdateView, PageDeleteView, UserPageListView
 from . import views
 
 urlpatterns = [
@@ -15,5 +15,6 @@ urlpatterns = [
     path('page/<int:pk>/edit', PageUpdateView.as_view(), name='edit-page'),
     # Delete view looks for template in location <app>/<model>_confirm_delete.html
     path('page/<int:pk>/delete', PageDeleteView.as_view(), name='delete-page'),
+    path('user/<str:username>', UserPageListView.as_view(), name='user-pages'),
     path('about/', views.about, name='website-about'),
 ]

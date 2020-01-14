@@ -1,5 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.models import User
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Page
 
@@ -18,6 +19,24 @@ class PageListView(ListView):
     context_object_name = 'pages'
     # Order pages so latest page is shown at top (This is done by the '-')
     ordering = ['-date_posted']
+    # Defining the number of published pages that should be displayed on each page of the list view
+    paginate_by = 5
+
+# Inherits list view
+class UserPageListView(ListView):
+    model = Page
+    # Update which template this list view interacts with
+    template_name = 'website/user_pages.html'
+    context_object_name = 'pages'
+    # Defining the number of published pages that should be displayed on each page of the list view
+    paginate_by = 5
+
+    def get_queryset(self):
+        # Get user from User model where username is equal to the username in the url
+        # This will 404 if user doesn't exist
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
+        # Return pages where the user is the author, ordered by date_posted
+        return Page.objects.filter(author=user).order_by('-date_posted')
 
 # Inherit from detail view as it provides the 'details' of the published page
 class PageDetailView(DetailView):
