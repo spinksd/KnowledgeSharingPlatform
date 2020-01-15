@@ -26,6 +26,7 @@ class UserUpdateForm(forms.ModelForm):
     
 # Allow user to update profile image - this will be used in template with about function to look like one form
 class ProfileUpdateForm(forms.ModelForm):
+
     class Meta:
         model = Profile
-        fields = ['image']
+        fields = ['description', 'image']

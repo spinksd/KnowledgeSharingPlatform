@@ -145,4 +145,4 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'KnowledgeSharingPlatform.email@gmail.com'
-EMAIL_HOST_PASSWORD = 'wY-:MT#Lp#f-NM3b'
+EMAIL_HOST_PASSWORD = 'e5j=8",=_fW96x\j'

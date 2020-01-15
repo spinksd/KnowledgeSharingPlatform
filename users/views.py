@@ -16,7 +16,7 @@ def register(request):
             # This is a great example of how Django can save a lot of time and effort as all I require here is 1 line of code.
             # Under the hood this method gets all the data values, connects to the db and writes all the data to the relevant table with the appropriate data.
             form.save()
-            # Django stores valid form data in a python dictionary called 'cleaned_data'. Here we use the 'get' method to retrieve data from the dictionary.
+            # Django stores valid form data in a python dictionary called 'cleaned_data'. Here I use the 'get' method to retrieve data from the dictionary and check the username is valid before confirming successful creation.
             username = form.cleaned_data.get('username')
             # Provide message to user telling them of successful user creation
             messages.success(request, f'Your account has been created! You are now able to login.')

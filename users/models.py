@@ -9,6 +9,10 @@ from PIL import Image
 class Profile(models.Model):
     # Make profile has one to one relationship with user. Additionally, delete profile if user gets deleted.
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    # Description field for a little biography/background information about user
+    description = models.CharField(null=True, max_length=500)
+
     # Image field for user's profile picture. Defaults to blank user image if not set.
     image = models.ImageField(default='default_user.png', upload_to='profile_pics')
 

@@ -14,13 +14,13 @@
             </fieldset>
             <div class="form-group">
                 <button class="btn btn-outline-info" type="submit">Login</button>
+                <small class="text-muted ml-2">
+                    <a href="{% url 'forgotten_password' %}">Forgotten your password?</a>
+                </small>
             </div>
         </form>
         <!--padding top 3-->
         <div class="border-top pt-3">
-            <small class="text-muted">
-                <a class="ml-2" href="#">Fogotten your password?</a>
-            </small>
             <small class="text-muted">
                 Need an account? <a class="ml-2" href="{% url 'register' %}">Sign Up Now</a>
             </small>
