@@ -2,7 +2,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 
 
@@ -34,6 +33,7 @@ def profile(request):
     if request.method == 'POST':
         user_form = UserUpdateForm(request.POST, instance=request.user)
         # Profile also has image data attached to it, so make sure to load FILES data
+        # https://docs.djangoproject.com/en/3.0/topics/http/file-uploads/
         profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
         # If data provided by user if valid, save form data to database (Update user's details)
         if user_form.is_valid() and profile_form.is_valid():

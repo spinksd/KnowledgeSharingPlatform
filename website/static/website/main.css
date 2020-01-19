@@ -13,9 +13,14 @@ body {
   }
   
   .bg-steel {
-    background-color: #5f788a;
+    background-color: #659DBD;
   }
   
+  .logo {
+    width: auto;
+    overflow: hidden;
+  }
+
   .site-header .navbar-nav .nav-link {
     color: #cbd5db;
   }

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'website.apps.WebsiteConfig',
     'users.apps.UsersConfig',
     'crispy_forms',
+    'taggit',
 ]
 
 MIDDLEWARE = [

@@ -16,7 +16,7 @@ class Profile(models.Model):
     # Image field for user's profile picture. Defaults to blank user image if not set.
     image = models.ImageField(default='default_user.png', upload_to='profile_pics')
 
-    # Here I define how I want the profile of a user to be presented - otherwise it would just present a profile object (and be difficult to understand what it relates to)
+    # Here I define how I want the profile of a user to be presented - otherwise it would just present a profile object when queried (and be difficult to understand what it relates to)
     def __str__(self):
         return f'{self.user.username} Profile'
 
@@ -48,3 +48,4 @@ class Profile(models.Model):
                 image.thumbnail(output_size)
                 # Overwrite uploaded image with re-sized image
                 image.save(self.image.path)
+                

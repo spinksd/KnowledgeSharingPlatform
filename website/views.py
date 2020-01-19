@@ -1,15 +1,11 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
+from django.core.files.storage import FileSystemStorage
+from django.db.models import Q
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Page
-
-def home(request):
-    context = {
-        'pages': Page.objects.all()
-    }
-    return render(request, 'website/home.html', context)
-
+from .forms import DocumentUploadForm
 
 # Inherits list view as page effectively has a 'list' of latest pages
 class PageListView(ListView):
@@ -41,13 +37,22 @@ class UserPageListView(ListView):
 # Inherit from detail view as it provides the 'details' of the published page
 class PageDetailView(DetailView):
     model = Page
+    is_liked = False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        page = context['page']
+        if page.likes.filter(id=self.request.user.id).exists():
+            context['is_liked'] = True
+        return context
 
 # Inherit from LoginRequiredMixin such that the user is redirected to the login page when attempting to access this page when not logged in
+# https://docs.djangoproject.com/en/3.0/topics/auth/default/#the-loginrequired-mixin
 # Also inherit from CreateView as this class is for creating a page
 class PageCreateView(LoginRequiredMixin, CreateView):
     model = Page
     # Setting the fields the user will be able to edit when creating a page
-    fields = ['title', 'content']
+    fields = ['title', 'short_description', 'main_text']
 
     # This specifies that the author of the page that is being created is the user who is currently logged in and submits the page creation
     def form_valid(self, form):
@@ -81,7 +86,7 @@ class PageUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         else:
             return False
 
-# Inherit from detail view as it provides the 'details' of the published page
+# Inherit from delete view as it provides delete functionality of a published page
 class PageDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Page
     # Set success_url so that this is where the user is directed to (localhost:8000/) when a page is successfully deleted
@@ -97,6 +102,57 @@ class PageDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return True
         else:
             return False
+
+class SearchResultsView(LoginRequiredMixin, PageListView):
+    template_name = 'website/search_results.html'
+    ordering = []
+    # redirect_field_name = 'redirect_to'
+
+    # Use GET request for this so that searches can be shared between users
+    # Filter on page titles
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        object_list = Page.objects.filter(
+            Q(title__icontains=query) | Q(short_description__icontains=query) | Q(main_text__icontains=query)
+        )
+        return object_list
+
+
+# Inherit from LoginRequiredMixin such that the user is redirected to the login page when attempting to access this page when not logged in
+# Also inherit from CreateView as this class is for creating a page
+class DocumentUploadView(LoginRequiredMixin, CreateView):
+    model = Page
+    template_name = 'website/upload_document.html'
+    fields = []
+
+    def get(self, request):
+        form = DocumentUploadForm()
+        return render(request, 'website/upload_document.html', {'form': form})
+
+    def post(self, request):
+        form = DocumentUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            # Assign form to a temporary field
+            temp = form.save(commit=False)
+            # So that I can add user to the saved form in order to comply with the NOT NULL constraint on the author id of the page
+            temp.author = request.user
+            # Then save the form/page
+            temp.save()
+            return redirect('website-home')
+
+def like_page(request, pk):
+    # Get page object
+    page = get_object_or_404(Page, id=pk)
+    # Check if user has already liked the page. If so and they've clicked the button again - they're removing their like.
+    if page.likes.filter(id=request.user.id).exists():
+        page.likes.remove(request.user)
+        is_liked = False
+    # Else if user has not already liked the page, add a like from the user!
+    else:
+        page.likes.add(request.user)
+        is_liked = True
+    # Redirect user to the same published page
+    return redirect('published-page', pk)
 
 def about(request):
     return render(request, 'website/about.html', {'title': 'About'})
