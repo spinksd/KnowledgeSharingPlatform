@@ -1,5 +1,5 @@
-{% extends "website/base.html" %}
-{% block content %}
+{% extends "website/extended_base.html" %}
+{% block content-extended %}
     {% for page in pages %}
         <article class="media content-section">
           <img class="rounded-circle article-img" src="{{ page.author.profile.image.url }}">
@@ -43,4 +43,4 @@
       {% endif %}
 
     {% endif %}
-{% endblock content %}
+{% endblock content-extended %}

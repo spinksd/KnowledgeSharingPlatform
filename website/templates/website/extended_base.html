@@ -1,0 +1,12 @@
+{% extends "website/base.html" %}
+{% block content %}
+
+<main role="main" class="container">
+  <div class="row justify-content-center">
+    <div class="col-10">
+      {% block content-extended %}{% endblock content-extended %}
+    </div>
+  </div>
+</main>
+    
+{% endblock content %}

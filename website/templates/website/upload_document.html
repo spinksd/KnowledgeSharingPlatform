@@ -1,6 +1,6 @@
-{% extends "website/base.html" %}
+{% extends "website/extended_base.html" %}
 {% load crispy_forms_tags %}
-{% block content %}
+{% block content-extended %}
         <h2>Upload your document!</h2>
         <form method="POST" enctype="multipart/form-data">
             <div class="form-horizontal">
@@ -10,4 +10,4 @@
                 <button class="btn btn-primary mt-2" type="submit">Upload file</button>
             </div>
         </form>
-{% endblock content %}
+{% endblock content-extended %}

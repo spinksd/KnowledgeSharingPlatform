@@ -1,7 +1,7 @@
-{% extends "website/base.html" %}
+{% extends "website/extended_base.html" %}
 <!-- Load crispy form tags so I can use them for styling -->
 {% load crispy_forms_tags %}
-{% block content %}
+{% block content-extended %}
     <div class="content-section">
         <form method="POST">
             <!-- Add csrf token for security (prevents cross-site request forgery) -->
@@ -23,4 +23,4 @@
             </small>
         </div>
     </div>
-{% endblock content %}
+{% endblock content-extended %}

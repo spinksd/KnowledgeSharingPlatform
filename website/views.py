@@ -70,7 +70,7 @@ class PageCreateView(LoginRequiredMixin, CreateView):
 class PageUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Page
     # Setting the fields the user will be able to edit when creating a page
-    fields = ['title', 'content']
+    fields = ['title', 'short_description', 'main_text']
 
     # This specifies that the author of the page that is being created is the user who is currently logged in and submits the page creation
     def form_valid(self, form):

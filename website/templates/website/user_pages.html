@@ -1,5 +1,5 @@
-{% extends "website/base.html" %}
-{% block content %}
+{% extends "website/extended_base.html" %}
+{% block content-extended %}
     <h1 class="mb-3">Pages published by {{ view.kwargs.username }} ({{ page_obj.paginator.count }})</h1 c>
     {% for page in pages %}
         <article class="media content-section">
@@ -43,4 +43,4 @@
       {% endif %}
 
     {% endif %}
-{% endblock content %}
+{% endblock content-extended %}

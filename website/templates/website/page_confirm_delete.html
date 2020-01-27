@@ -1,5 +1,5 @@
-{% extends "website/base.html" %}
-{% block content %}
+{% extends "website/extended_base.html" %}
+{% block content-extended %}
     <div class="content-section">
         <form method="POST">
             <!-- Add csrf token for security (prevents cross-site request forgery) -->
@@ -17,4 +17,4 @@
             </div>
         </form>
     </div>
-{% endblock content %}
+{% endblock content-extended %}
