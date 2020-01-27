@@ -2,16 +2,19 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
-from django.db.models import Q
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.db.models import Q, Count
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from .models import Page
 from .forms import DocumentUploadForm
 
+class HomePageView(LoginRequiredMixin, TemplateView):
+    template_name = 'website/home.html'
+
 # Inherits list view as page effectively has a 'list' of latest pages
-class PageListView(ListView):
+class PageListView(LoginRequiredMixin, ListView):
     model = Page
     # Update which template this list view interacts with
-    template_name = 'website/home.html'
+    template_name = 'website/most_recent.html'
     context_object_name = 'pages'
     # Order pages so latest page is shown at top (This is done by the '-')
     ordering = ['-date_posted']
@@ -19,7 +22,7 @@ class PageListView(ListView):
     paginate_by = 5
 
 # Inherits list view
-class UserPageListView(ListView):
+class UserPageListView(LoginRequiredMixin, ListView):
     model = Page
     # Update which template this list view interacts with
     template_name = 'website/user_pages.html'
@@ -35,7 +38,7 @@ class UserPageListView(ListView):
         return Page.objects.filter(author=user).order_by('-date_posted')
 
 # Inherit from detail view as it provides the 'details' of the published page
-class PageDetailView(DetailView):
+class PageDetailView(LoginRequiredMixin, DetailView):
     model = Page
     is_liked = False
 
@@ -103,7 +106,7 @@ class PageDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         else:
             return False
 
-class SearchResultsView(LoginRequiredMixin, PageListView):
+class SearchResultsView(PageListView):
     template_name = 'website/search_results.html'
     ordering = []
     # redirect_field_name = 'redirect_to'
@@ -138,7 +141,22 @@ class DocumentUploadView(LoginRequiredMixin, CreateView):
             temp.author = request.user
             # Then save the form/page
             temp.save()
-            return redirect('website-home')
+            return redirect('home')
+
+# Inherits list view as page effectively has a 'list' of latest pages
+class TopRatedListView(LoginRequiredMixin, ListView):
+    model = Page
+    # Update which template this list view interacts with
+    template_name = 'website/top_rated.html'
+    context_object_name = 'pages'
+    # Defining the number of published pages that should be displayed on each page of the list view
+    paginate_by = 5
+
+    # Overwrite default queryset to get the total count of likes for each page, and then order by the most liked pages
+    def get_queryset(self):
+        return Page.objects.annotate(like_count=Count('likes')).order_by('-like_count')
+
+    
 
 def like_page(request, pk):
     # Get page object

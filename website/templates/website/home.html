@@ -1,45 +1,120 @@
 {% extends "website/base.html" %}
+{% load static %}
 {% block content %}
-    {% for page in pages %}
-        <article class="media content-section">
-          <img class="rounded-circle article-img" src="{{ page.author.profile.image.url }}">
-          <div class="media-body">
-              <div class="article-metadata">
-                <a class="mr-2" href="{% url 'user-pages' page.author.username %}">{{ page.author }}</a>
-                <small class="text-muted">{{ page.date_posted|date:"F d, Y" }}</small>
-                <!-- Above prints the date posted in format: Month (F) Day number (d), Year (Y)
-                     as per documentation: https://docs.djangoproject.com/en/2.0/ref/templates/builtins/#date -->
+<form method="GET" action="{% url 'search-results' %}">
+  <div class="form-row justify-content-center">
+      <div class="form-group col-8">
+          <div class="input-group">
+              <input class="form-control py-2 border-right-0 border" type="search" name="q" placeholder="Search..." />
+              <span class="input-group-append">
+                  <div class="input-group-text bg-transparent">
+                      <i class="fa fa-search"></i>
+                  </div>
+              </span>
+          </div>
+          <h6 class="mt-2" onclick="showAdvancedOptions()" id="AdvancedOptionsText">Advanced Options <span id="AdvancedOptionsArrow"></span></h6>
+      </div>        
+  </div>
+  <div class="form-row justify-content-center" id="AdvancedOptionsArea">
+    <div class="form-group col-md-3">
+      Tags:
+      <input type="text" id="tags" placeholder="Search tags..." name="tags">
+    </div>
+    <div class="form-group col-md-3">
+      Contacts:
+      <input type="text" id="contacts" placeholder="Search contacts..." name="contacts">
+    </div>
+    <div class="form-group col-md-2">
+      Has Document?
+      <input id="toggle-on" name="toggle" type="radio" value="no">
+      <label for="toggle-on">No</label>
+      <input id="toggle-off" name="toggle" type="radio" value="yes">
+      <label for="toggle-off">Yes</label>
+    </div>
+  </div>
+  <div class="form-row justify-content-center">
+    <div class="form-group col-md-8">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+  </div>
+</form>
+
+      <div class="row justify-content-center">
+        <div class ="col-sm-4 col-md-3 d-flex align-items-stretch mt-4">
+          <div class="card">
+            <div class="card mb-1 mt-1 ml-1 mr-1">
+              <a href="{% url 'create-page' %}">
+              <img class="card-img-top" src="{% static 'website/capgemini-logo.png' %}" alt="Card image cap">
+              <div class="card-body text-center">
+                <h5 class="card-title">Create Documentation Page</h5>
               </div>
-              <!-- Link page title to page url by passing in primary key of the page to url routing -->
-              <h2><a class="article-title" href="{% url 'published-page' page.id %}">{{ page.title }}</a></h2>
-              <p class="article-content">{{ page.content }}</p>
+              </a>
             </div>
-        </article>
-    {% endfor %}
-    <!-- Check if page is paginated and style paging accordingly -->
-    {% if is_paginated %}
-      {% if page_obj.has_previous %}
-        <!-- Link first page and previous page if this isn't the first page -->
-        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
-      {% endif %}
+          </div>
+        </div>
+        <div class ="col-sm-4 col-md-3 col-md-offset-3 d-flex align-items-stretch mt-4">
+          <div class="card">
+            <div class="card mb-1 mt-1 ml-1 mr-1">
+              <a href="{% url 'upload-document' %}">
+              <img class="card-img-top" src="{% static 'website/capgemini-logo.png' %}" alt="Card image cap">
+              <div class="card-body text-center">
+                <h5 class="card-title">Upload Document</h5>
+              </div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class ="col-sm-4 col-md-3 col-md-offset-3 d-flex align-items-stretch mt-4">
+          <div class="card">
+            <div class="card mb-1 mt-1 ml-1 mr-1">
+              <a href="{% url 'top-rated' %}">
+              <img class="card-img-top" src="{% static 'website/capgemini-logo.png' %}" alt="Card image cap">
+              <div class="card-body text-center">
+                <h5 class="card-title">Top Rated Pages</h5>
+              </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class ="col-sm-4 col-md-3 d-flex align-items-stretch mt-4">
+          <div class="card">
+            <div class="card mb-1 mt-1 ml-1 mr-1">
+              <a href="{% url 'most-recent' %}">
+              <img class="card-img-top" src="{% static 'website/capgemini-logo.png' %}" alt="Card image cap">
+              <div class="card-body text-center">
+                <h5 class="card-title">Recently Published Pages</h5>
+              </div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class ="col-sm-4 col-md-3 d-flex align-items-stretch mt-4">
+          <div class="card">
+            <div class="card mb-1 mt-1 ml-1 mr-1">
+              <a href="{% url 'user-pages' user.get_username %}">
+              <img class="card-img-top" src="{% static 'website/capgemini-logo.png' %}" alt="Card image cap">
+              <div class="card-body text-center">
+                <h5 class="card-title">View My Published Pages</h5>
+              </div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class ="col-sm-4 col-md-3 d-flex align-items-stretch mt-4">
+          <div class="card">
+            <div class="card mb-1 mt-1 ml-1 mr-1">
+              <a href="{% url 'about' %}">
+              <img class="card-img-top" src="{% static 'website/capgemini-logo.png' %}" alt="Card image cap">
+              <div class="card-body text-center">
+                <h5 class="card-title">About This Platform</h5>
+              </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <!-- Get paginator for current page and find page range. This is then used to provide links to page numbers around the current page number -->
-      {% for num in page_obj.paginator.page_range %}
-        <!-- Check if page number is current page and style so it's obviously the page the user's currently on -->
-        {% if page_obj.number == num %}
-        <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
-        <!-- If number that the loop is currently on is within the range of -3 to +3 of current page, display links for it  -->
-        {% elif num > page_obj.number|add:'-3' %}
-          {% if num < page_obj.number|add:'3' %}
-            <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
-          {% endif %}
-        {% endif %}
-      {% endfor %}
-
-      {% if page_obj.has_next %}
-        <!-- Link last page if this isn't the last page -->
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-      {% endif %}
-
-    {% endif %}
+<script src="static/website/scripts.js" onload="showAdvancedOptions()"></script>
 {% endblock content %}

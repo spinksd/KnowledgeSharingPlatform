@@ -8,7 +8,8 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
+    <!-- Further bootstrap css - namely 'awesome font'. I use this for a search icon -->
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{% static 'website/main.css' %}">
     {% if title %}
         <title>KSP - {{ title }}</title>
@@ -29,16 +30,19 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarToggle">
               <div class="navbar-nav mr-auto">
-                <a class="nav-item nav-link" href="{% url 'website-home' %}">Home</a>
-                <a class="nav-item nav-link" href="{% url 'website-about' %}">About</a>
+                {% if user.is_authenticated %}
+                  <a class="nav-item nav-link" href="{% url 'home' %}">Home</a>
+                {% else %}
+                  <a class="nav-item nav-link" href="{% url 'login' %}">Home</a>
+                {% endif %}
+                <a class="nav-item nav-link" href="{% url 'about' %}">About</a>
               </div>
-                <!-- <form action="{% url 'search-results' %}" method="get">
-                  <input class="logo" name="q" type="text" placeholder="Search...">
-                </form> -->
-                <form class="form-inline my-2 my-lg-0" action="{% url 'search-results' %}" method="get">
-                  <input name="q" type="text" class="form-control mr-sm-2" type="search" placeholder="Search..." aria-label="Search">
-                  <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
-                </form>
+                {% if user.is_authenticated %}
+                  <form class="form-inline my-2 my-lg-0" action="{% url 'search-results' %}" method="get">
+                    <input name="q" type="text" class="form-control mr-sm-2" type="search" placeholder="Search..." aria-label="Search">
+                    <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
+                  </form>
+                {% endif %}
               <div class="navbar-nav">
                 <!-- Django provides is_authenticated method to see if user is logged in -->
                 <!-- As per BDD requirements/scenarios, user should see different navbar choices depending on whether they are logged in or not -->
@@ -57,22 +61,25 @@
         </nav>
       </header>
 
-      <main role="main" class="container">
+     <!-- <main role="main" class="container">
         <div class="row">
           <div class="col-md-8">
-            <!-- Get any messages to user to appear at top of page. Styled using bootstrap. -->
+            Get any messages to user to appear at top of page. Styled using bootstrap. 
             {% if messages %}
               {% for message in messages %}
-                <!-- message.tags returns the type of alert (e.g. success, warning, error etc.) and styles it accordingly. -->
+                message.tags returns the type of alert (e.g. success, warning, error etc.) and styles it accordingly.
                 <div class="alert alert-{{ message.tags }}">
                   {{ message }}
                 </div>
               {% endfor %}
             {% endif %}
-            <!-- Add in content of our pages using block content -->
-            {% block content %}{% endblock %}
+            Add in content of our pages using block content 
+            
+            
           </div>
-      </main>
+      </main> -->
+
+      {% block content %}{% endblock %}
     
     <!-- Useful scripts -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

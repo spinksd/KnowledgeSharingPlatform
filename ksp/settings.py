@@ -127,14 +127,14 @@ STATIC_URL = '/static/'
 
 # Telling Django the root path to store files. I.e. any media will be stored under this directory.
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-# This sets how I can access the image in the browser/the html I've created
+# This sets the url I can access the media root directory in the browser (I.e. localhost:8000/media/{file_name})
 MEDIA_URL = '/media/'
 
-# Crispy default to bootstrap2 CSS styling which is quite old. Setting this gets it to use later version of bootstrap.
+# Crispy defaults to bootstrap2 CSS styling which is quite old. Setting this gets it to use later version of bootstrap.
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Set url to direct user to when they log in (default Django implementation using auth class directs user to http://localhost:8000/accounts/profile/)
-LOGIN_REDIRECT_URL = 'website-home'
+LOGIN_REDIRECT_URL = 'home'
 
 # Set url to direct user to login page when attempting to access a page where they must be logged in
 LOGIN_URL = 'login'
