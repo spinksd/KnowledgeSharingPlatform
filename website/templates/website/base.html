@@ -1,89 +1,99 @@
 {% load static %}
 <!DOCTYPE html>
 <html>
+
 <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <!-- Further bootstrap css - namely 'awesome font'. I use this for a search icon -->
-    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{% static 'website/main.css' %}">
-    {% if title %}
-        <title>KSP - {{ title }}</title>
-    {% else %}
-        <title>KSP</title>
-    {% endif %}
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <!-- Further bootstrap css - namely 'awesome font'. I use this for a search icon -->
+  <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="{% static 'website/main.css' %}">
+  {% if title %}
+  <title>KSP - {{ title }}</title>
+  {% else %}
+  <title>KSP</title>
+  {% endif %}
 </head>
-<body>
-    <header class="site-header">
-        <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
-          <div>
-            <img src="{% static 'website/capgemini-logo.png' %}" width="175" height="60">
-          </div>
-          <div class="container">
-            <a class="navbar-brand mr-2" href="/">Knowledge Sharing Platform</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarToggle">
-              <div class="navbar-nav mr-auto">
-                {% if user.is_authenticated %}
-                  <a class="nav-item nav-link" href="{% url 'home' %}">Home</a>
-                {% else %}
-                  <a class="nav-item nav-link" href="{% url 'login' %}">Home</a>
-                {% endif %}
-                <a class="nav-item nav-link" href="{% url 'about' %}">About</a>
-              </div>
-                {% if user.is_authenticated %}
-                  <form class="form-inline my-2 my-lg-0" action="{% url 'search-results' %}" method="get">
-                    <input name="q" type="text" class="form-control mr-sm-2" type="search" placeholder="Search..." aria-label="Search">
-                    <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
-                  </form>
-                {% endif %}
-              <div class="navbar-nav">
-                <!-- Django provides is_authenticated method to see if user is logged in -->
-                <!-- As per BDD requirements/scenarios, user should see different navbar choices depending on whether they are logged in or not -->
-                {% if user.is_authenticated %}
-                  <a class="nav-item nav-link" href="{% url 'create-page' %}">Create Page</a>
-                  <a class="nav-item nav-link" href="{% url 'upload-document' %}">Upload Document</a>
-                  <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
-                  <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
-                {% else %}
-                  <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
-                  <a class="nav-item nav-link" href="{% url 'register' %}">Sign Up</a>
-                {% endif %}
-              </div>
-            </div>
-          </div>
-        </nav>
-      </header>
 
-      <main role="main" class="container">
-        <div class="row justify-content-center">
-          <div class="col-10">
-            <!-- Get any messages to user to appear at top of page. Styled using bootstrap. -->
-            {% if messages %}
-              {% for message in messages %}
-                <!-- message.tags returns the type of alert (e.g. success, warning, error etc.) and styles it accordingly. -->
-                <div class="alert alert-{{ message.tags }}">
-                  {{ message }}
-                </div>
-              {% endfor %}
+<body>
+  <header class="site-header">
+    <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+      <div>
+        <img src="{% static 'website/capgemini-logo.png' %}" width="175" height="60">
+      </div>
+      <div class="container">
+        <a class="navbar-brand mr-2" href="/">Knowledge Sharing Platform</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle"
+          aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarToggle">
+          <div class="navbar-nav mr-auto">
+            {% if user.is_authenticated %}
+            <a class="nav-item nav-link" href="{% url 'home' %}">Home</a>
+            {% else %}
+            <a class="nav-item nav-link" href="{% url 'login' %}">Home</a>
+            {% endif %}
+            <a class="nav-item nav-link" href="{% url 'about' %}">About</a>
+          </div>
+          {% if user.is_authenticated %}
+          <form class="form-inline my-2 my-lg-0" action="{% url 'search-results' %}" method="get">
+            <input name="query" type="text" class="form-control mr-sm-2" type="search" placeholder="Search..."
+              aria-label="Search">
+            <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
+          </form>
+          {% endif %}
+          <div class="navbar-nav">
+            <!-- Django provides is_authenticated method to see if user is logged in -->
+            <!-- As per BDD requirements/scenarios, user should see different navbar choices depending on whether they are logged in or not -->
+            {% if user.is_authenticated %}
+            <a class="nav-item nav-link" href="{% url 'create-page' %}">Create Page</a>
+            <a class="nav-item nav-link" href="{% url 'upload-document' %}">Upload Document</a>
+            <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
+            <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
+            {% else %}
+            <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+            <a class="nav-item nav-link" href="{% url 'register' %}">Sign Up</a>
             {% endif %}
           </div>
         </div>
-      </main>
+      </div>
+    </nav>
+  </header>
 
-      <!-- Add individual page content -->
-      {% block content %}{% endblock %}
-    
-    <!-- Useful scripts -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <div class="row justify-content-center">
+    <div class="col-10">
+      <!-- Get any messages to user to appear at top of page. Styled using bootstrap. -->
+      {% if messages %}
+      {% for message in messages %}
+      <!-- message.tags returns the type of alert (e.g. success, warning, error etc.) and styles it accordingly. -->
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+      {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Add individual page content -->
+  {% block content %}{% endblock %}
+
+  <!-- Useful scripts -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
 </body>
+
 </html>

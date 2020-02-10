@@ -10,7 +10,8 @@ class Page(models.Model):
     short_description = models.CharField(max_length=300, blank=True)
     main_text = models.TextField()
     document = models.FileField(upload_to='documents/', blank=True)
-    # tags = 
+    # Use taggit package to manage tags. Set blank=True such that the tags value can be blank.
+    tags = TaggableManager(blank=True)
     # Can access contacts via .contacts.all() or .contacts.filter(...)
     # contacts = models.ManyToManyField(User)
     date_posted = models.DateTimeField(default=timezone.now)

@@ -1,20 +1,89 @@
 {% extends "website/base.html" %}
 <!-- Load crispy form tags so I can use them for styling -->
 {% load crispy_forms_tags %}
-{% block content-extended %}
-    <div class="content-section">
-        <form method="POST">
-            <!-- Add csrf token for security (prevents cross-site request forgery) -->
-            {% csrf_token %}
-            <!-- bootstrap class -->
-            <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Create Page</legend>
-                <!-- Vertical bar specifies that I want to use a filter. The crispy filter improves the styling (e.g. adds asterisks to required fields, labels form in a neat way, error messages presented neatly etc.) -->
-                {{ form|crispy }}
-            </fieldset>
-            <div class="form-group">
-                <button class="btn btn-outline-info" type="submit">Publish</button>
+{% block content %}
+<main role="main">
+  <div class="row">
+    <div class="col-10 border" id="main">
+      <form method="POST">
+        <!-- Add csrf token for security (prevents cross-site request forgery) -->
+        {% csrf_token %}
+        <div class="row">
+          <button type="submit" class="btn btn-primary">Create Page</button>
+        </div>
+        <div class="mr-auto" id="form-section">
+          <div class="input-group mt-3 mb-3">
+            <input type="text" name="title" maxlength="50" class="form-control" placeholder="Title" required id="title">
+          </div>
+          <div class="input-group mt-3 mb-3">
+            <textarea name="main_text" class="form-control" id="exampleTextarea" rows="16" placeholder="Main text" required
+              id="main_text"></textarea>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col border-right border-top">
+            <div class="row">
+              <div class="col">
+                <ul class="list-group">
+                  <li class="list-group-item"><input type="text" class="form-control" name="tag1" placeholder="Example Tag 1"></li>
+                  <li class="list-group-item"><input type="text" class="form-control" name="tag2" placeholder="Example Tag 2"></li>
+                </ul>
+              </div>
+              <div class="col">
+                <ul class="list-group">
+                  <li class="list-group-item"><input type="text" class="form-control" name="tag3" placeholder="Example Tag 3"></li>
+                  <li class="list-group-item"><input type="text" class="form-control" name="tag4" placeholder="Example Tag 4"></li>
+                </ul>
+              </div>
+              <div class="col">
+                <ul class="list-group">
+                  <li class="list-group-item"><input type="text" class="form-control" name="tag5" placeholder="Example Tag 5"></li>
+                  <li class="list-group-item"><input type="text" class="form-control" name="tag6" placeholder="Example Tag 6"></li>
+                </ul>
+              </div>
             </div>
-        </form>
+          </div>
+          <div class="col border-left border-top">
+            <div class="row">
+              <div class="col">
+                <ul class="list-group">
+                  <li class="list-group-item">Example Contact 1</li>
+                  <li class="list-group-item">Example Contact 2</li>
+                </ul>
+              </div>
+              <div class="col">
+                <ul class="list-group">
+                  <li class="list-group-item">Example Contact 3</li>
+                  <li class="list-group-item">Example Contact 4</li>
+                </ul>
+              </div>
+              <div class="col">
+                <ul class="list-group">
+                  <li class="list-group-item">Example Contact 5</li>
+                  <li class="list-group-item">Example Contact 6</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
     </div>
-{% endblock content-extended %}
+
+    <!-- sidebar -->
+    <div class="col-2 border" id="sidebar">
+      <div class="row justify-content-center mb-5">
+        <h3>Author</h3>
+      </div>
+      <div class="row justify-content-center mb-5">
+        <img class="rounded-circle article-img" src="{{ profile_img }}" style="width: 60%; height: 60%">
+      </div>
+      <div class="row justify-content-center mb-3">
+          <h6>About this author:</h6>
+      </div>
+      <div class="row justify-content-center mb-3">
+        <p>{{ profile_desc }}</p>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock content %}

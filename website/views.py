@@ -57,12 +57,26 @@ class PageCreateView(LoginRequiredMixin, CreateView):
     # Setting the fields the user will be able to edit when creating a page
     fields = ['title', 'short_description', 'main_text']
 
+    # Get currently logged in user's profile image and description for sidebar
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['profile_img'] = self.request.user.profile.image.url
+        context['profile_desc'] = self.request.user.profile.description
+        return context
+
     # This specifies that the author of the page that is being created is the user who is currently logged in and submits the page creation
     def form_valid(self, form):
         # Specify author as current user (This is the neatest way of setting the author - if author is not specified then Django throws an integrity error as the NOT NULL constraint for author is failed)
         form.instance.author = self.request.user
+        # Save form so tags can be added
+        form.save()
+        # Get tags from submitted form
+        tags = self.request.POST.get('tag1') + ',' + self.request.POST.get('tag2') + ',' + self.request.POST.get('tag3') + ',' + self.request.POST.get('tag4') + ',' + self.request.POST.get('tag5') + ',' + self.request.POST.get('tag6')
+        # Set page tags via so - removes all of the pages current tags then adds the new tags specified
+        form.instance.tags.set(tags, clear=True)
         # Call original function to handle the rest of the processing
         return super().form_valid(form)
+        
 
 # Inherit from UpdateView as this class is for updating a page
 # Also inherit from LoginRequiredMixin with addition of UserPassesTestMixin which allows me to add function to check user is author of the page
@@ -114,7 +128,7 @@ class SearchResultsView(PageListView):
     # Use GET request for this so that searches can be shared between users
     # Filter on page titles
     def get_queryset(self):
-        query = self.request.GET.get('q')
+        query = self.request.GET.get('query')
         object_list = Page.objects.filter(
             Q(title__icontains=query) | Q(short_description__icontains=query) | Q(main_text__icontains=query)
         )

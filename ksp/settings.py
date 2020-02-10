@@ -139,6 +139,9 @@ LOGIN_REDIRECT_URL = 'home'
 # Set url to direct user to login page when attempting to access a page where they must be logged in
 LOGIN_URL = 'login'
 
+# Make searching for tags case insensitive 
+TAGGIT_CASE_INSENSITIVE = True
+
 # Setting email config - using gmail account created for the purpose of this platform
 # In a Production environment, the username (and definitely password), would likely be grabbed from a secure vault
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
