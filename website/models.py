@@ -13,7 +13,8 @@ class Page(models.Model):
     # Use taggit package to manage tags. Set blank=True such that the tags value can be blank.
     tags = TaggableManager(blank=True)
     # Can access contacts via .contacts.all() or .contacts.filter(...)
-    # contacts = models.ManyToManyField(User)
+    contacts = models.ManyToManyField(User, related_name='contacts', blank=True)
+    # Set date posted to current time/date
     date_posted = models.DateTimeField(default=timezone.now)
     # The below references the user who created the page, and if the user gets deleted, the author gets set to 'Deleted user'
     # This has been done as information on page may still be useful and therefore don't want to delete page if user gets deleted

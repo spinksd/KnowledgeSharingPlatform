@@ -4,8 +4,9 @@ from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.db.models import Q, Count
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
+from dal import autocomplete
 from .models import Page
-from .forms import DocumentUploadForm
+from .forms import DocumentUploadForm, CreateUpdatePageForm
 
 class HomePageView(LoginRequiredMixin, TemplateView):
     template_name = 'website/home.html'
@@ -55,7 +56,8 @@ class PageDetailView(LoginRequiredMixin, DetailView):
 class PageCreateView(LoginRequiredMixin, CreateView):
     model = Page
     # Setting the fields the user will be able to edit when creating a page
-    fields = ['title', 'short_description', 'main_text']
+    # fields = ['title', 'short_description', 'main_text']
+    form_class = CreateUpdatePageForm
 
     # Get currently logged in user's profile image and description for sidebar
     def get_context_data(self, **kwargs):
@@ -69,11 +71,11 @@ class PageCreateView(LoginRequiredMixin, CreateView):
         # Specify author as current user (This is the neatest way of setting the author - if author is not specified then Django throws an integrity error as the NOT NULL constraint for author is failed)
         form.instance.author = self.request.user
         # Save form so tags can be added
-        form.save()
+        # form.save()
         # Get tags from submitted form
-        tags = self.request.POST.get('tag1') + ',' + self.request.POST.get('tag2') + ',' + self.request.POST.get('tag3') + ',' + self.request.POST.get('tag4') + ',' + self.request.POST.get('tag5') + ',' + self.request.POST.get('tag6')
+        # tags = self.request.POST.get('tag1') + ',' + self.request.POST.get('tag2') + ',' + self.request.POST.get('tag3') + ',' + self.request.POST.get('tag4') + ',' + self.request.POST.get('tag5') + ',' + self.request.POST.get('tag6')
         # Set page tags via so - removes all of the pages current tags then adds the new tags specified
-        form.instance.tags.set(tags, clear=True)
+        # form.instance.tags.set(tags, clear=True)
         # Call original function to handle the rest of the processing
         return super().form_valid(form)
         
@@ -170,7 +172,22 @@ class TopRatedListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return Page.objects.annotate(like_count=Count('likes')).order_by('-like_count')
 
-    
+# Use autocomplete package for contact search in create / edit page
+class ContactsAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        # Extra layer of security ensuring user is logged in
+        if not self.request.user.is_authenticated:
+             return User.objects.none()
+        
+        # Initially get all users that have an account
+        qs = User.objects.all()
+
+        # Filter user list with the letter(s) entered in contact search on create/edit page
+        if self.q:
+            qs = qs.filter(username__istartswith=self.q)
+        
+        # Return filtered set of users
+        return qs
 
 def like_page(request, pk):
     # Get page object

@@ -2,6 +2,9 @@
 <!-- Load crispy form tags so I can use them for styling -->
 {% load crispy_forms_tags %}
 {% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.css" />
+
 <main role="main">
   <div class="row">
     <div class="col-10 border" id="main">
@@ -47,20 +50,7 @@
             <div class="row">
               <div class="col">
                 <ul class="list-group">
-                  <li class="list-group-item">Example Contact 1</li>
-                  <li class="list-group-item">Example Contact 2</li>
-                </ul>
-              </div>
-              <div class="col">
-                <ul class="list-group">
-                  <li class="list-group-item">Example Contact 3</li>
-                  <li class="list-group-item">Example Contact 4</li>
-                </ul>
-              </div>
-              <div class="col">
-                <ul class="list-group">
-                  <li class="list-group-item">Example Contact 5</li>
-                  <li class="list-group-item">Example Contact 6</li>
+                  <select name="contacts" theme="bootstrap" data-placeholder="Search contacts..." data-minimum-input-length="1" id="contacts_autocomplete" data-autocomplete-light-language="en" data-autocomplete-light-url="/contacts-autocomplete/" data-autocomplete-light-function="select2" multiple="multiple"></select>
                 </ul>
               </div>
             </div>
@@ -86,4 +76,10 @@
     </div>
   </div>
 </main>
+
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+{{ form.media }}
 {% endblock content %}

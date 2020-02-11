@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import PageListView, PageDetailView, PageCreateView, PageUpdateView, PageDeleteView, UserPageListView, SearchResultsView, DocumentUploadView, HomePageView, TopRatedListView
+from .views import PageListView, PageDetailView, PageCreateView, PageUpdateView, PageDeleteView, UserPageListView, SearchResultsView, DocumentUploadView, HomePageView, TopRatedListView, ContactsAutocomplete
 from . import views
 
 urlpatterns = [
@@ -21,4 +21,5 @@ urlpatterns = [
     path('top_rated/', TopRatedListView.as_view(), name='top-rated'),
     path('most_recent/', PageListView.as_view(), name='most-recent'),
     path('about/', views.about, name='about'),
+    path('contacts-autocomplete/', ContactsAutocomplete.as_view(), name='contacts-autocomplete'),
 ]
