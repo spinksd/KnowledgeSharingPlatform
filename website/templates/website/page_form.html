@@ -6,7 +6,17 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.css" />
 <link rel="stylesheet" type="text/css" href="{% static 'website/bootstrap-tagsinput.css' %}">
-<!--<span class="tag label label-info">hey<span data-role="remove"></span></span>-->
+
+{% if form.errors %}
+   {% for field in form %}
+      {% for error in field.errors %}
+      <div class="alert alert-warning }}">
+        {{ error }}
+      </div>
+      {% endfor %}
+   {% endfor %}
+{% endif %}
+
 <main role="main">
   <div class="row">
     <div class="col-10 border" id="main">
@@ -31,7 +41,7 @@
               <div class="col">
                 <ul class="list-group">
                   <div class="form-group">
-                    <label>Tags</label>
+                    <label>Tags (6 maximum):</label>
                     <input type="text" data-role="tagsinput" class="form-control" name="tags">
                   </div>
                 </ul>
@@ -43,7 +53,7 @@
               <div class="col">
                 <ul class="list-group">
                   <div class="form-group">
-                    <label>Contacts</label>
+                    <label>Contacts:</label>
                     <select class="form-control" name="contacts" theme="bootstrap" data-placeholder="Search contacts..." data-minimum-input-length="1" id="contacts_autocomplete" data-autocomplete-light-language="en" data-autocomplete-light-url="/contacts-autocomplete/" data-autocomplete-light-function="select2" multiple="multiple"></select>
                   </div>
                 </ul>

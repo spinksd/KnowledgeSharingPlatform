@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib import messages
 from dal import autocomplete
 from .models import Page
 
@@ -20,3 +21,11 @@ class CreateUpdatePageForm(forms.ModelForm):
                 'data-minimum-input-length': 1,
             },)
         }
+    
+    def clean_tags(self):
+        tags = self.cleaned_data.get('tags', [])
+        if len(tags) > 6:
+            raise forms.ValidationError('Invalid number of tags. Can\'t have more than 6 tags!', code='invalid')
+        # The below should return the data of the current form
+        # Such that the user's submitted data remains in the form (however, this currently doesn't seem to work)
+        return self.cleaned_data
