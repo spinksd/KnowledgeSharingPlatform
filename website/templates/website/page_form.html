@@ -4,35 +4,41 @@
 {% load crispy_forms_tags %}
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.css" />
+<link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.css" />
 <link rel="stylesheet" type="text/css" href="{% static 'website/bootstrap-tagsinput.css' %}">
 
 {% if form.errors %}
-   {% for field in form %}
-      {% for error in field.errors %}
+  {% for field in form %}
+    {% for error in field.errors %}
       <div class="alert alert-warning }}">
         {{ error }}
       </div>
-      {% endfor %}
-   {% endfor %}
+    {% endfor %}
+  {% endfor %}
 {% endif %}
 
 <main role="main">
-  <div class="row">
-    <div class="col-10 border" id="main">
-      <form method="POST">
+  <form method="POST">
+    <div class="row form-top-submit">
+      <div class="col-10">
+        <p>Click on the different sections of the page to edit them!</p>
+      </div>
+      <div class="col-2">
+        <button type="submit" class="btn btn-primary align-self-end">Create Page</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-10 border" id="main">
         <!-- Add csrf token for security (prevents cross-site request forgery) -->
         {% csrf_token %}
-        <div class="row">
-          <button type="submit" class="btn btn-primary">Create Page</button>
-        </div>
         <div class="mr-auto" id="form-section">
           <div class="input-group mt-3 mb-3">
             <input type="text" name="title" maxlength="50" class="form-control" placeholder="Title" required id="title">
           </div>
           <div class="input-group mt-3 mb-3">
-            <textarea name="main_text" class="form-control" id="exampleTextarea" rows="16" placeholder="Main text" required
-              id="main_text"></textarea>
+            <textarea name="main_text" class="form-control" id="exampleTextarea" rows="16" placeholder="Main text"
+              required id="main_text"></textarea>
           </div>
         </div>
         <div class="row">
@@ -54,38 +60,40 @@
                 <ul class="list-group">
                   <div class="form-group">
                     <label>Contacts (maximum 6):</label>
-                    <select class="form-control" name="contacts" theme="bootstrap" data-placeholder="Search contacts..." data-minimum-input-length="1" id="contacts_autocomplete" data-autocomplete-light-language="en" data-autocomplete-light-url="/contacts-autocomplete/" data-autocomplete-light-function="select2" multiple="multiple"></select>
+                    <select class="form-control" name="contacts" theme="bootstrap" data-placeholder="Search contacts..."
+                      data-minimum-input-length="1" id="contacts_autocomplete" data-autocomplete-light-language="en"
+                      data-autocomplete-light-url="/contacts-autocomplete/" data-autocomplete-light-function="select2"
+                      multiple="multiple"></select>
                   </div>
                 </ul>
               </div>
             </div>
           </div>
         </div>
-      </form>
-    </div>
+      </div>
 
-    <!-- sidebar -->
-    <div class="col-2 border" id="sidebar">
-      <div class="row justify-content-center mb-5">
-        <h3>Author</h3>
-      </div>
-      <div class="row justify-content-center mb-5">
-        <img class="rounded-circle article-img" src="{{ profile_img }}" style="width: 60%; height: 60%">
-      </div>
-      <div class="row justify-content-center mb-3">
+      <!-- sidebar -->
+      <div class="col-2 border" id="sidebar">
+        <div class="row justify-content-center mb-5">
+          <h3>Author</h3>
+        </div>
+        <div class="row justify-content-center mb-5">
+          <img class="rounded-circle article-img" src="{{ profile_img }}" style="width: 60%; height: 60%">
+        </div>
+        <div class="row justify-content-center mb-3">
           <h6>About this author:</h6>
-      </div>
-      <div class="row justify-content-center mb-3">
-        <p>{{ profile_desc }}</p>
+        </div>
+        <div class="row justify-content-center mb-3">
+          <p>{{ profile_desc }}</p>
+        </div>
       </div>
     </div>
-  </div>
+  </form>
 </main>
 
-<script
-  src="https://code.jquery.com/jquery-3.2.1.min.js"
-  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-  crossorigin="anonymous"></script>
+<!-- These scripts and {{ form.media }} template are required for django-taggit and select2 autocomplete respectively -->
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 <script src="{% static 'website/bootstrap-tagsinput.js' %}"></script>
 {{ form.media }}
 {% endblock content %}
