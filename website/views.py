@@ -70,12 +70,6 @@ class PageCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         # Specify author as current user (This is the neatest way of setting the author - if author is not specified then Django throws an integrity error as the NOT NULL constraint for author is failed)
         form.instance.author = self.request.user
-        # Save form so tags can be added
-        # form.save()
-        # Get tags from submitted form
-        # tags = self.request.POST.get('tag1') + ',' + self.request.POST.get('tag2') + ',' + self.request.POST.get('tag3') + ',' + self.request.POST.get('tag4') + ',' + self.request.POST.get('tag5') + ',' + self.request.POST.get('tag6')
-        # Set page tags via so - removes all of the pages current tags then adds the new tags specified
-        # form.instance.tags.set(tags, clear=True)
         # Call original function to handle the rest of the processing
         return super().form_valid(form)
         
@@ -131,9 +125,13 @@ class SearchResultsView(PageListView):
     # Filter on page titles
     def get_queryset(self):
         query = self.request.GET.get('query')
+        tags = self.request.GET.get('tags')
         object_list = Page.objects.filter(
             Q(title__icontains=query) | Q(short_description__icontains=query) | Q(main_text__icontains=query)
         )
+        # If any tags have been specified, filter on those tags
+        if not tags.is_empty():
+            object_list.objects.filter(tags__name__in=[tags]).distinct()
         return object_list
 
 
