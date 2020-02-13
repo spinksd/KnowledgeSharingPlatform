@@ -139,7 +139,7 @@ class SearchResultsView(PageListView):
         query = self.request.GET.get('query')
         tags = self.request.GET.get('tags')
         object_list = Page.objects.filter(
-            Q(title__icontains=query) | Q(short_description__icontains=query) | Q(main_text__icontains=query)
+            Q(title__icontains=query) | Q(description__icontains=query) | Q(text__icontains=query)
         )
         # If any tags have been specified, filter on those tags
         if not tags.is_empty():
