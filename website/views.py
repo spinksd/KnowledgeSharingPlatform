@@ -5,6 +5,7 @@ from django.core.files.storage import FileSystemStorage
 from django.db.models import Q, Count
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from dal import autocomplete
+from taggit.utils import edit_string_for_tags
 from .models import Page
 from .forms import DocumentUploadForm, CreateUpdatePageForm
 
@@ -55,8 +56,6 @@ class PageDetailView(LoginRequiredMixin, DetailView):
 # Also inherit from CreateView as this class is for creating a page
 class PageCreateView(LoginRequiredMixin, CreateView):
     model = Page
-    # Setting the fields the user will be able to edit when creating a page
-    # fields = ['title', 'short_description', 'main_text']
     form_class = CreateUpdatePageForm
 
     # Get currently logged in user's profile image and description for sidebar
@@ -79,8 +78,14 @@ class PageCreateView(LoginRequiredMixin, CreateView):
 # The UserPassTestMixin allows me to add the test_func seen below - where I've added the author check functionality
 class PageUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Page
-    # Setting the fields the user will be able to edit when creating a page
-    fields = ['title', 'short_description', 'main_text']
+    form_class = CreateUpdatePageForm
+
+    # Get currently logged in user's profile image and description for sidebar
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['profile_img'] = self.request.user.profile.image.url
+        context['profile_desc'] = self.request.user.profile.description
+        return context
 
     # This specifies that the author of the page that is being created is the user who is currently logged in and submits the page creation
     def form_valid(self, form):
@@ -88,7 +93,14 @@ class PageUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         form.instance.author = self.request.user
         # Call original function to handle the rest of the processing
         return super().form_valid(form)
-    
+
+    # Add get_initial method to use edit_string_for_tags method
+    # This is required to get the value of the django-taggit feature (Tags area) on the update view to render correctly
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['tags'] = edit_string_for_tags(Page.tags.get_queryset())
+        return initial
+
     def test_func(self):
         # Get current page user is trying to access the edit page for
         page = self.get_object()

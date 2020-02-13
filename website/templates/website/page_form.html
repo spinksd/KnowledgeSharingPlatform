@@ -9,13 +9,13 @@
 <link rel="stylesheet" type="text/css" href="{% static 'website/bootstrap-tagsinput.css' %}">
 
 {% if form.errors %}
-  {% for field in form %}
-    {% for error in field.errors %}
-      <div class="alert alert-warning }}">
-        {{ error }}
-      </div>
-    {% endfor %}
-  {% endfor %}
+{% for field in form %}
+{% for error in field.errors %}
+<div class="alert alert-warning }}">
+  {{ error }}
+</div>
+{% endfor %}
+{% endfor %}
 {% endif %}
 
 <main role="main">
@@ -25,7 +25,8 @@
         <p>Click on the different sections of the page to edit them!</p>
       </div>
       <div class="col-2">
-        <button type="submit" class="btn btn-primary align-self-end">Create Page</button>
+        <!-- If not object (i.e. page hasn't been created, show a 'create page' button, else show an 'update page' button -->
+        <button type="submit" class="btn btn-primary align-self-end">{% if not object %}Create Page {% else %} Update Page {% endif %}</button>
       </div>
     </div>
     <div class="row">
@@ -34,11 +35,12 @@
         {% csrf_token %}
         <div class="mr-auto" id="form-section">
           <div class="input-group mt-3 mb-3">
-            <input type="text" name="title" maxlength="50" class="form-control" placeholder="Title" required id="title">
+            <input type="text" name="title" maxlength="50" class="form-control" placeholder="Title"
+              {% if form.title.value != None %} value="{{ form.title.value }}" {% endif %} required id="title">
           </div>
           <div class="input-group mt-3 mb-3">
-            <textarea name="main_text" class="form-control" id="exampleTextarea" rows="16" placeholder="Main text"
-              required id="main_text"></textarea>
+            <textarea name="text" class="form-control" rows="16" placeholder="Main text" required
+              id="text">{% if form.text.value != None %} {{ form.text.value }} {% endif %}</textarea>
           </div>
         </div>
         <div class="row">
@@ -48,7 +50,7 @@
                 <ul class="list-group">
                   <div class="form-group">
                     <label>Tags (maximum 6):</label>
-                    <input type="text" data-role="tagsinput" class="form-control" name="tags">
+                        <input type="text" data-role="tagsinput" class="form-control" {% if form.tags.value != None  %} value="{{ form.tags.value }}" {% endif %} name="tags">
                   </div>
                 </ul>
               </div>
@@ -63,7 +65,16 @@
                     <select class="form-control" name="contacts" theme="bootstrap" data-placeholder="Search contacts..."
                       data-minimum-input-length="1" id="contacts_autocomplete" data-autocomplete-light-language="en"
                       data-autocomplete-light-url="/contacts-autocomplete/" data-autocomplete-light-function="select2"
-                      multiple="multiple"></select>
+                      multiple="multiple">
+                        <!-- Check if form has an instance (i.e. this is an update page) -->
+                        {% if form.instance.pk %}
+                          <!-- If it is update page, loop through contacts and add to view -->
+                          {% for contact in form.instance.contacts.all %}
+                            <option value="{{ forloop.counter }}" selected="" data-select2-id="{{ forloop.counter }}">{{ contact.username }}</option>
+                          {% endfor %}
+                        {% endif %}
+                        <!-- Else if create page, leave as blank select -->
+                    </select>
                   </div>
                 </ul>
               </div>

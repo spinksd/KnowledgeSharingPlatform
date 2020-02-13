@@ -7,8 +7,8 @@ from taggit.managers import TaggableManager
 # Create class/model for a page
 class Page(models.Model):
     title = models.CharField(max_length=50)
-    short_description = models.CharField(max_length=300, blank=True)
-    main_text = models.TextField()
+    description = models.CharField(max_length=300, blank=True)
+    text = models.TextField()
     document = models.FileField(upload_to='documents/', blank=True)
     # Use taggit package to manage tags. Set blank=True such that the tags value can be blank.
     tags = TaggableManager(blank=True)
