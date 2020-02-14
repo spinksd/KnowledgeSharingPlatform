@@ -11,3 +11,10 @@ function showAdvancedOptions() {
       elem.style.visibility = "hidden";
     }
   }
+
+function updateSelec2Value() {
+  var elems = document.getElementsByClassName("select2-selection__choice");
+  for (elem in elems) {
+    elem.value = elem.innerHTML
+  }
+}

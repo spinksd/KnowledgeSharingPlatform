@@ -3,14 +3,17 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.db.models import Q, Count
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, FormView
 from dal import autocomplete
 from taggit.utils import edit_string_for_tags
 from .models import Page
-from .forms import DocumentUploadForm, CreateUpdatePageForm
+from .forms import DocumentUploadForm, CreateUpdatePageForm, AdvancedSearchForm
 
-class HomePageView(LoginRequiredMixin, TemplateView):
+# Had to update this to be FormView as opposed to TemplateView such that it would pick up on the form_class attribute
+# The AdvancedSearchForm holds the autocomplete widget for the autocomplete contact field in advanced search
+class HomePageView(LoginRequiredMixin, FormView):
     template_name = 'website/home.html'
+    form_class = AdvancedSearchForm
 
 # Inherits list view as page effectively has a 'list' of latest pages
 class PageListView(LoginRequiredMixin, ListView):
@@ -130,21 +133,42 @@ class PageDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 class SearchResultsView(PageListView):
     template_name = 'website/search_results.html'
-    ordering = []
-    # redirect_field_name = 'redirect_to'
+    ordering = ['-likes']
+    paginate_by = 5
 
     # Use GET request for this so that searches can be shared between users
     # Filter on page titles
     def get_queryset(self):
-        query = self.request.GET.get('query')
-        tags = self.request.GET.get('tags')
-        object_list = Page.objects.filter(
-            Q(title__icontains=query) | Q(description__icontains=query) | Q(text__icontains=query)
-        )
-        # If any tags have been specified, filter on those tags
-        if not tags.is_empty():
-            object_list.objects.filter(tags__name__in=[tags]).distinct()
-        return object_list
+        query = self.request.GET.get('query', None)
+        tags = self.request.GET.get('tags', None)
+        contacts = self.request.GET.getlist('contacts', None)
+
+        if query is not None:
+            # Add first filters checking if the title OR description OR main text of the page contains the text the user's searching for
+            filters = Q(title__icontains=query) | Q(description__icontains=query) | Q(text__icontains=query)
+        else:
+            filters = None
+
+        # If user has speicified any tags, filter pages on those tags
+        if tags:
+            # Split tags using comma to put them into a list such that the filter filters on all tags individually
+            tags = tags.split(',')
+            # The below format of '&=' specifies to add an 'AND' Q object to the existing filters
+            # It's also possible to use '|=' to specify another 'OR' Q object to further filter on
+            filters &= Q(tags__name__in=tags)
+
+        # If user has speicified any contacts, filter pages on those tags
+        if contacts:
+            # The GET request passes the id's (primary key) of the contacts in as a list of strings
+            # The below converts it to a list of integers
+            contacts = [int(i) for i in contacts]
+            # We then use the contact list of integers (primary keys) to check if any of the pages have that user as a contact
+            filters &= Q(contacts__pk__in=contacts)
+        
+        # Get pages that match all filters
+        pages = Page.objects.filter(filters).distinct()
+        # Return matched pages to user
+        return pages
 
 
 # Inherit from LoginRequiredMixin such that the user is redirected to the login page when attempting to access this page when not logged in

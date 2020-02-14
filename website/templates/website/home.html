@@ -1,31 +1,40 @@
 {% extends "website/base.html" %}
 {% load static %}
 {% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" />
+<link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="{% static 'website/bootstrap-tagsinput.css' %}">
+
 <form method="GET" action="{% url 'search-results' %}">
   <div class="form-row justify-content-center">
-      <div class="form-group col-8">
-          <div class="input-group">
-              <input class="form-control py-2 border-right-0 border" type="search" name="query" placeholder="Search..." />
-              <span class="input-group-append">
-                  <div class="input-group-text bg-transparent">
-                      <i class="fa fa-search"></i>
-                  </div>
-              </span>
+    <div class="form-group col-8">
+      <div class="input-group">
+        <input class="form-control py-2 border-right-0 border" type="search" name="query" placeholder="Search..." />
+        <span class="input-group-append">
+          <div class="input-group-text bg-transparent">
+            <i class="fa fa-search"></i>
           </div>
-          <h6 class="mt-2" onclick="showAdvancedOptions()" id="AdvancedOptionsText">Advanced Options <span id="AdvancedOptionsArrow"></span></h6>
-      </div>        
+        </span>
+      </div>
+      <h6 class="mt-2" onclick="showAdvancedOptions()" id="AdvancedOptionsText">Advanced Options <span
+          id="AdvancedOptionsArrow"></span></h6>
+    </div>
   </div>
   <div class="form-row justify-content-center" id="AdvancedOptionsArea">
     <div class="form-group col-md-3">
-      Tags:
-      <input type="text" id="tags" placeholder="Search tags..." name="tags">
+      <label>Tags (comma separated):</label><br/>
+      <input type="text" data-role="tagsinput" class="form-control" name="tags" placeholder="Add tags here...">
     </div>
     <div class="form-group col-md-3">
-      Contacts:
-      <input type="text" id="contacts" placeholder="Search contacts..." name="contacts">
+      <label>Contacts:</label>
+      <select class="form-control" name="contacts" theme="bootstrap" data-placeholder="Search contacts..."
+        data-minimum-input-length="1" id="contacts_autocomplete" data-autocomplete-light-language="en"
+        data-autocomplete-light-url="/contacts-autocomplete/" data-autocomplete-light-function="select2"
+        multiple="multiple" onformchange="updateSelect2Value()"></select>
     </div>
     <div class="form-group col-md-2">
-      Has Document?
+      <label>Has Document?</label><br/>
       <input id="toggle-on" name="toggle" type="radio" value="no">
       <label for="toggle-on">No</label>
       <input id="toggle-off" name="toggle" type="radio" value="yes">
@@ -34,87 +43,93 @@
   </div>
   <div class="form-row justify-content-center">
     <div class="form-group col-md-8">
-        <button type="submit" class="btn btn-primary">Search</button>
+      <button type="submit" class="btn btn-primary">Search</button>
     </div>
   </div>
 </form>
 
-      <div class="row justify-content-center">
-        <div class ="col-sm-4 col-md-3 d-flex align-items-stretch mt-4">
-          <div class="card">
-            <div class="card mb-1 mt-1 ml-1 mr-1">
-              <a href="{% url 'create-page' %}">
-              <img class="card-img-top" src="{% static 'website/capgemini-logo.png' %}" alt="Card image cap">
-              <div class="card-body text-center">
-                <h5 class="card-title">Create Documentation Page</h5>
-              </div>
-              </a>
-            </div>
+<div class="row justify-content-center">
+  <div class="col-sm-4 col-md-3 d-flex align-items-stretch mt-4">
+    <div class="card">
+      <div class="card mb-1 mt-1 ml-1 mr-1">
+        <a href="{% url 'create-page' %}">
+          <img class="card-img-top" src="{% static 'website/capgemini-logo.png' %}" alt="Card image cap">
+          <div class="card-body text-center">
+            <h5 class="card-title">Create Documentation Page</h5>
           </div>
-        </div>
-        <div class ="col-sm-4 col-md-3 col-md-offset-3 d-flex align-items-stretch mt-4">
-          <div class="card">
-            <div class="card mb-1 mt-1 ml-1 mr-1">
-              <a href="{% url 'upload-document' %}">
-              <img class="card-img-top" src="{% static 'website/capgemini-logo.png' %}" alt="Card image cap">
-              <div class="card-body text-center">
-                <h5 class="card-title">Upload Document</h5>
-              </div>
-              </a>
-            </div>
-          </div>
-        </div>
-        <div class ="col-sm-4 col-md-3 col-md-offset-3 d-flex align-items-stretch mt-4">
-          <div class="card">
-            <div class="card mb-1 mt-1 ml-1 mr-1">
-              <a href="{% url 'top-rated' %}">
-              <img class="card-img-top" src="{% static 'website/capgemini-logo.png' %}" alt="Card image cap">
-              <div class="card-body text-center">
-                <h5 class="card-title">Top Rated Pages</h5>
-              </div>
-              </a>
-            </div>
-          </div>
-        </div>
+        </a>
       </div>
-      <div class="row justify-content-center">
-        <div class ="col-sm-4 col-md-3 d-flex align-items-stretch mt-4">
-          <div class="card">
-            <div class="card mb-1 mt-1 ml-1 mr-1">
-              <a href="{% url 'most-recent' %}">
-              <img class="card-img-top" src="{% static 'website/capgemini-logo.png' %}" alt="Card image cap">
-              <div class="card-body text-center">
-                <h5 class="card-title">Recently Published Pages</h5>
-              </div>
-              </a>
-            </div>
+    </div>
+  </div>
+  <div class="col-sm-4 col-md-3 col-md-offset-3 d-flex align-items-stretch mt-4">
+    <div class="card">
+      <div class="card mb-1 mt-1 ml-1 mr-1">
+        <a href="{% url 'upload-document' %}">
+          <img class="card-img-top" src="{% static 'website/capgemini-logo.png' %}" alt="Card image cap">
+          <div class="card-body text-center">
+            <h5 class="card-title">Upload Document</h5>
           </div>
-        </div>
-        <div class ="col-sm-4 col-md-3 d-flex align-items-stretch mt-4">
-          <div class="card">
-            <div class="card mb-1 mt-1 ml-1 mr-1">
-              <a href="{% url 'user-pages' user.get_username %}">
-              <img class="card-img-top" src="{% static 'website/capgemini-logo.png' %}" alt="Card image cap">
-              <div class="card-body text-center">
-                <h5 class="card-title">View My Published Pages</h5>
-              </div>
-              </a>
-            </div>
-          </div>
-        </div>
-        <div class ="col-sm-4 col-md-3 d-flex align-items-stretch mt-4">
-          <div class="card">
-            <div class="card mb-1 mt-1 ml-1 mr-1">
-              <a href="{% url 'about' %}">
-              <img class="card-img-top" src="{% static 'website/capgemini-logo.png' %}" alt="Card image cap">
-              <div class="card-body text-center">
-                <h5 class="card-title">About This Platform</h5>
-              </div>
-              </a>
-            </div>
-          </div>
-        </div>
+        </a>
       </div>
+    </div>
+  </div>
+  <div class="col-sm-4 col-md-3 col-md-offset-3 d-flex align-items-stretch mt-4">
+    <div class="card">
+      <div class="card mb-1 mt-1 ml-1 mr-1">
+        <a href="{% url 'top-rated' %}">
+          <img class="card-img-top" src="{% static 'website/capgemini-logo.png' %}" alt="Card image cap">
+          <div class="card-body text-center">
+            <h5 class="card-title">Top Rated Pages</h5>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row justify-content-center">
+  <div class="col-sm-4 col-md-3 d-flex align-items-stretch mt-4">
+    <div class="card">
+      <div class="card mb-1 mt-1 ml-1 mr-1">
+        <a href="{% url 'most-recent' %}">
+          <img class="card-img-top" src="{% static 'website/capgemini-logo.png' %}" alt="Card image cap">
+          <div class="card-body text-center">
+            <h5 class="card-title">Recently Published Pages</h5>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4 col-md-3 d-flex align-items-stretch mt-4">
+    <div class="card">
+      <div class="card mb-1 mt-1 ml-1 mr-1">
+        <a href="{% url 'user-pages' user.get_username %}">
+          <img class="card-img-top" src="{% static 'website/capgemini-logo.png' %}" alt="Card image cap">
+          <div class="card-body text-center">
+            <h5 class="card-title">View My Published Pages</h5>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4 col-md-3 d-flex align-items-stretch mt-4">
+    <div class="card">
+      <div class="card mb-1 mt-1 ml-1 mr-1">
+        <a href="{% url 'about' %}">
+          <img class="card-img-top" src="{% static 'website/capgemini-logo.png' %}" alt="Card image cap">
+          <div class="card-body text-center">
+            <h5 class="card-title">About This Platform</h5>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
 
+<!-- Custom made script to hide/show advanced options for main search bar -->
 <script src="static/website/scripts.js" onload="showAdvancedOptions()"></script>
+<!-- These scripts and {{ form.media }} template are required for django-taggit and select2 autocomplete respectively -->
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script src="{% static 'website/bootstrap-tagsinput.js' %}"></script>
+{{ form.media }}
 {% endblock content %}

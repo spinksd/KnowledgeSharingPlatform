@@ -49,8 +49,8 @@
               <div class="col">
                 <ul class="list-group">
                   <div class="form-group">
-                    <label>Tags (maximum 6):</label>
-                        <input type="text" data-role="tagsinput" class="form-control" {% if form.tags.value != None  %} value="{{ form.tags.value }}" {% endif %} name="tags">
+                    <label>Tags (maximum 6, comma separated):</label><br/>
+                    <input type="text" data-role="tagsinput" class="form-control" {% if form.tags.value != None  %} value="{{ form.tags.value }}" {% endif %} name="tags" placeholder="Add tags here...">
                   </div>
                 </ul>
               </div>

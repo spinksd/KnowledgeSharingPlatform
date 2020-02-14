@@ -1,7 +1,6 @@
 from django import forms
 from django.contrib import messages
 from dal import autocomplete
-from taggit.forms import TagWidget
 from .models import Page
 
 class DocumentUploadForm(forms.ModelForm):
@@ -37,3 +36,18 @@ class CreateUpdatePageForm(forms.ModelForm):
         # The below should return the data of the current form
         # Such that the user's submitted data remains in the form (however, this currently doesn't seem to work)
         return self.cleaned_data
+
+# This is a form to add autocomplete functionality to the contacts field in the advanced search on the home page
+class AdvancedSearchForm(forms.ModelForm):
+
+    class Meta:
+        model = Page
+        fields = ['contacts', 'tags']
+        widgets = {
+            'contacts': autocomplete.ModelSelect2Multiple(url='contacts-autocomplete', attrs={
+                # Set a placeholder
+                'data-placeholder': 'Search contacts...',
+                # Trigger autocompletion after a single character have been typed
+                'data-minimum-input-length': 1,
+            },),
+        }
