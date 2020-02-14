@@ -50,7 +50,7 @@
                 <ul class="list-group">
                   <div class="form-group">
                     <label>Tags (maximum 6, comma separated):</label><br/>
-                    <input type="text" data-role="tagsinput" class="form-control" {% if form.tags.value != None  %} value="{{ form.tags.value }}" {% endif %} name="tags" placeholder="Add tags here...">
+                    <input type="text" data-role="tagsinput" class="form-control" value="{% for tag in form.tags.value %} {{ tag }}, {% endfor %}" name="tags" placeholder="Add tags here...">
                   </div>
                 </ul>
               </div>

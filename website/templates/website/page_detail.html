@@ -1,33 +1,115 @@
 {% extends "website/base.html" %}
 {% block content %}
-    <article class="media content-section">
-      <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}">
-      <div class="media-body">
-        <div class="article-metadata">
-          <a class="mr-2" href="{% url 'user-pages' object.author.username %}">{{ object.author }}</a>
-          <small class="text-muted">{{ object.date_posted|date:"F d, Y" }}</small>
-          <!-- Above prints the date posted in format: Month (F) Day number (d), Year (Y)
-               as per documentation: https://docs.djangoproject.com/en/2.0/ref/templates/builtins/#date -->
-        {% if object.author == user %}
-          <div>
-            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'edit-page' object.id %}">Edit Page</a>
-            <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'delete-page' object.id %}">Delete Page</a>
-          </div>
-        {% endif %}
-        </div>
-        <h2 class="article-title">{{ object.title }}</h2>
-        <p class="article-content">{{ object.content }}</p>
-        <div>
-          <form action="{% url 'like-page' object.id %}" method="POST">
-            {% csrf_token %}
-            {% if is_liked %}
-            <button type="submit" class="btn btn-danger">Dislike</button>
-            {% else %}
-            <button type="submit" class="btn btn-primary">Like</button>
-            {% endif %}
-          </form>
-        </div>
-        <p class="text-muted mt-2 mb-2">Total number of likes: {{ object.total_likes }}</p>
+<main role="main">
+  {% if object.author == user %}
+  <div class="row form-top-submit">
+    <div class="col-10 d-inline-flex">
+      <pre class="mt-2 mb-1">Page published by YOU on {{ object.date_posted|date:"F d, Y" }}</pre>
+    </div>
+    <div class="col-2">
+      <div>
+        <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'edit-page' object.id %}">Edit Page</a>
+        <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'delete-page' object.id %}">Delete Page</a>
       </div>
-    </article>
+    </div>
+  </div>
+  {% endif %}
+  <div class="row">
+    <div class="col-10 border" id="main">
+      <div class="mr-auto" id="form-section">
+        <div class="mt-3 mb-3 border-bottom">
+          <h2 class="article-title">{{ object.title }}</h2>
+        </div>
+        <div class="mt-3 mb-3" style="min-height: 350px;">
+          <p>{{ object.text }}</p>>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col border-right border-top">
+          <h5>Tags:</h5>
+          <div class="row">
+            <div class="col">
+              <ul class="list-group">
+                <!-- Manually loop through tags for the page and add them into view, else add a break in the heading for formatting purposes -->
+                <li class="list-group-item"><h6>{% if object.tags.all.0.name != None %} {{ object.tags.all.0.name }} {% else %} <br/> {% endif %}</h6></li>
+                <li class="list-group-item"><h6>{% if object.tags.all.1.name != None %} {{ object.tags.all.1.name }} {% else %} <br/> {% endif %}</h6></li>
+              </ul>
+            </div>
+            <div class="col">
+              <ul class="list-group">
+                <li class="list-group-item"><h6>{% if object.tags.all.2.name != None %} {{ object.tags.all.2.name }} {% else %} <br/> {% endif %}</h6></li>
+                <li class="list-group-item"><h6>{% if object.tags.all.3.name != None %} {{ object.tags.all.3.name }} {% else %} <br/> {% endif %}</h6></li>
+              </ul>
+            </div>
+            <div class="col">
+              <ul class="list-group">
+                <li class="list-group-item"><h6>{% if object.tags.all.4.name != None %} {{ object.tags.all.4.name }} {% else %} <br/> {% endif %}</h6></li>
+                <li class="list-group-item"><h6>{% if object.tags.all.5.name != None %} {{ object.tags.all.5.name }} {% else %} <br/> {% endif %}</h6></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col border-left border-top">
+          <h5>Contacts:</h5>
+          <div class="row">
+            <div class="col">
+              <ul class="list-group">
+                <li class="list-group-item">{% if object.contacts.all.0.username != None %}<a class="mr-2" href="{% url 'user-pages' object.contacts.all.0.username %}">{% else %}<a class="mr-2">{% endif %}{{ object.contacts.all.0.username }}</a></li>
+                <li class="list-group-item">{% if object.contacts.all.1.username != None %}<a class="mr-2" href="{% url 'user-pages' object.contacts.all.1.username %}">{% else %}<a class="mr-2">{% endif %}{{ object.contacts.all.1.username }}</a></li>
+              </ul>
+            </div>
+            <div class="col">
+              <ul class="list-group">
+                <li class="list-group-item">{% if object.contacts.all.2.username != None %}<a class="mr-2" href="{% url 'user-pages' object.contacts.all.2.username %}">{% else %}<a class="mr-2">{% endif %}{{ object.contacts.all.1.username }}</a></li>
+                <li class="list-group-item">{% if object.contacts.all.3.username != None %}<a class="mr-2" href="{% url 'user-pages' object.contacts.all.3.username %}">{% else %}<a class="mr-2">{% endif %}{{ object.contacts.all.3.username }}</a></li>
+              </ul>
+            </div>
+            <div class="col">
+              <ul class="list-group">
+                <li class="list-group-item">{% if object.contacts.all.4.username != None %}<a class="mr-2" href="{% url 'user-pages' object.contacts.all.4.username %}">{% else %}<a class="mr-2">{% endif %}{{ object.contacts.all.4.username }}</a></li>
+                <li class="list-group-item">{% if object.contacts.all.5.username != None %}<a class="mr-2" href="{% url 'user-pages' object.contacts.all.5.username %}">{% else %}<a class="mr-2">{% endif %}{{ object.contacts.all.5.username }}</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- sidebar -->
+    <div class="col-2 border" id="sidebar">
+      <div class="row justify-content-center mb-5">
+        <h3>Author</h3>
+      </div>
+      <div class="row justify-content-center mb-5">
+        <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}" style="width: 60%; height: 60%">
+      </div>
+      <div class="row justify-content-center mb-3">
+        <h6>About this author:</h6>
+      </div>
+      <div class="row justify-content-center mb-3">
+        <p>{{ page.author.profile.description }}</p>
+      </div>
+    </div>
+  </div>
+
+  {% if object.author != user %}
+  <div class="row form-top-submit">
+    <div class="col-10 d-inline-flex">
+      <pre class="mt-2 mb-1">Total number of likes: {{ object.total_likes }}</pre>
+    </div>
+    <div class="col-2">
+      <div>
+        <form action="{% url 'like-page' object.id %}" method="POST">
+          {% csrf_token %}
+          {% if is_liked %}
+          <button type="submit" class="btn btn-danger">Dislike</button>
+          {% else %}
+          <button type="submit" class="btn btn-primary">Like</button>
+          {% endif %}
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</main>
 {% endblock content %}

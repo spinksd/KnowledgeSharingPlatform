@@ -99,10 +99,10 @@ class PageUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     # Add get_initial method to use edit_string_for_tags method
     # This is required to get the value of the django-taggit feature (Tags area) on the update view to render correctly
-    def get_initial(self):
-        initial = super().get_initial()
-        initial['tags'] = edit_string_for_tags(Page.tags.get_queryset())
-        return initial
+    #def get_initial(self):
+    #    initial = super().get_initial()
+    #    initial['tags'] = edit_string_for_tags(Page.tags.get_queryset())
+    #    return initial
 
     def test_func(self):
         # Get current page user is trying to access the edit page for
