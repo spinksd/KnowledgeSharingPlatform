@@ -83,13 +83,6 @@ class PageUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Page
     form_class = CreateUpdatePageForm
 
-    # Get currently logged in user's profile image and description for sidebar
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['profile_img'] = self.request.user.profile.image.url
-        context['profile_desc'] = self.request.user.profile.description
-        return context
-
     # This specifies that the author of the page that is being created is the user who is currently logged in and submits the page creation
     def form_valid(self, form):
         # Specify author as current user (This is the neatest way of setting the author - if author is not specified then Django throws an integrity error as the NOT NULL constraint for author is failed)

@@ -2,7 +2,7 @@ import os
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
-# Pillow is requirement for Django to process image fields so I already have this available
+# Pillow is requirement for Django to process image fields
 from PIL import Image
 
 # Inherit from Django model
@@ -11,7 +11,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     # Description field for a little biography/background information about user
-    description = models.CharField(null=True, max_length=500)
+    description = models.CharField(null=True, max_length=500, default="This user has not added any bio information.")
 
     # Image field for user's profile picture. Defaults to blank user image if not set.
     image = models.ImageField(default='default_user.png', upload_to='profile_pics')

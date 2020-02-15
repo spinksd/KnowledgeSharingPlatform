@@ -1,0 +1,6 @@
+
+/* dal bootstrap css fix */
+.select2-container {
+    width: 100% !important;
+    max-width: 250px !important;
+  }

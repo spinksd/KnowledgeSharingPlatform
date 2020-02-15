@@ -113,3 +113,8 @@ body {
 #sidebar p, #sidebar h3, #sidebar h6 {
   color: white
 }
+
+.card-img-bottom {
+  max-width: 96px;
+  max-height: 96px;
+}
