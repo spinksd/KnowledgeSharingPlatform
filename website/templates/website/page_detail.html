@@ -30,21 +30,21 @@
           <div class="row">
             <div class="col">
               <ul class="list-group">
-                <!-- Manually loop through tags for the page and add them into view, else add a break in the heading for formatting purposes -->
-                <li class="list-group-item"><h6>{% if object.tags.all.0.name != None %} {{ object.tags.all.0.name }} {% else %} <br/> {% endif %}</h6></li>
-                <li class="list-group-item"><h6>{% if object.tags.all.1.name != None %} {{ object.tags.all.1.name }} {% else %} <br/> {% endif %}</h6></li>
+                <!-- Manually loop through tags for the page and add them into view, else add a blank <a> element with margins for formatting purposes -->
+                <li class="list-group-item"><a class="mr-2" {% if object.tags.all.0.name != None %} href="//{{ request.get_host }}/search/?query=&tags={{ object.tags.all.0.name }}">{% endif %}{{ object.tags.all.0.name }}</a></li>
+                <li class="list-group-item"><a class="mr-2" {% if object.tags.all.1.name != None %} href="//{{ request.get_host }}/search/?query=&tags={{ object.tags.all.1.name }}">{% endif %}{{ object.tags.all.1.name }}</a></li>
               </ul>
             </div>
             <div class="col">
               <ul class="list-group">
-                <li class="list-group-item"><h6>{% if object.tags.all.2.name != None %} {{ object.tags.all.2.name }} {% else %} <br/> {% endif %}</h6></li>
-                <li class="list-group-item"><h6>{% if object.tags.all.3.name != None %} {{ object.tags.all.3.name }} {% else %} <br/> {% endif %}</h6></li>
+                <li class="list-group-item"><a class="mr-2" {% if object.tags.all.2.name != None %} href="//{{ request.get_host }}/search/?query=&tags={{ object.tags.all.2.name }}">{% endif %}{{ object.tags.all.2.name }}</a></li>
+                <li class="list-group-item"><a class="mr-2" {% if object.tags.all.3.name != None %} href="//{{ request.get_host }}/search/?query=&tags={{ object.tags.all.3.name }}">{% endif %}{{ object.tags.all.3.name }}</a></li>
               </ul>
             </div>
             <div class="col">
               <ul class="list-group">
-                <li class="list-group-item"><h6>{% if object.tags.all.4.name != None %} {{ object.tags.all.4.name }} {% else %} <br/> {% endif %}</h6></li>
-                <li class="list-group-item"><h6>{% if object.tags.all.5.name != None %} {{ object.tags.all.5.name }} {% else %} <br/> {% endif %}</h6></li>
+                <li class="list-group-item"><a class="mr-2" {% if object.tags.all.4.name != None %} href="//{{ request.get_host }}/search/?query=&tags={{ object.tags.all.4.name }}">{% endif %}{{ object.tags.all.4.name }}</a></li>
+                <li class="list-group-item"><a class="mr-2" {% if object.tags.all.5.name != None %} href="//{{ request.get_host }}/search/?query=&tags={{ object.tags.all.5.name }}">{% endif %}{{ object.tags.all.5.name }}</a></li>
               </ul>
             </div>
           </div>
@@ -54,20 +54,20 @@
           <div class="row">
             <div class="col">
               <ul class="list-group">
-                <li class="list-group-item">{% if object.contacts.all.0.username != None %}<a class="mr-2" href="{% url 'user-pages' object.contacts.all.0.username %}">{% else %}<a class="mr-2">{% endif %}{{ object.contacts.all.0.username }}</a></li>
-                <li class="list-group-item">{% if object.contacts.all.1.username != None %}<a class="mr-2" href="{% url 'user-pages' object.contacts.all.1.username %}">{% else %}<a class="mr-2">{% endif %}{{ object.contacts.all.1.username }}</a></li>
+                <li class="list-group-item"><a class="mr-2" {% if object.contacts.all.0.username != None %} href="{% url 'user-pages' object.contacts.all.0.username %}" {% endif %}>{{ object.contacts.all.0.username }}</a></li>
+                <li class="list-group-item"><a class="mr-2" {% if object.contacts.all.1.username != None %} href="{% url 'user-pages' object.contacts.all.1.username %}" {% endif %}>{{ object.contacts.all.1.username }}</a></li>
               </ul>
             </div>
             <div class="col">
               <ul class="list-group">
-                <li class="list-group-item">{% if object.contacts.all.2.username != None %}<a class="mr-2" href="{% url 'user-pages' object.contacts.all.2.username %}">{% else %}<a class="mr-2">{% endif %}{{ object.contacts.all.2.username }}</a></li>
-                <li class="list-group-item">{% if object.contacts.all.3.username != None %}<a class="mr-2" href="{% url 'user-pages' object.contacts.all.3.username %}">{% else %}<a class="mr-2">{% endif %}{{ object.contacts.all.3.username }}</a></li>
+                <li class="list-group-item"><a class="mr-2" {% if object.contacts.all.2.username != None %} href="{% url 'user-pages' object.contacts.all.2.username %}" {% endif %}>{{ object.contacts.all.2.username }}</a></li>
+                <li class="list-group-item"><a class="mr-2" {% if object.contacts.all.3.username != None %} href="{% url 'user-pages' object.contacts.all.3.username %}"{% endif %}>{{ object.contacts.all.3.username }}</a></li>
               </ul>
             </div>
             <div class="col">
               <ul class="list-group">
-                <li class="list-group-item">{% if object.contacts.all.4.username != None %}<a class="mr-2" href="{% url 'user-pages' object.contacts.all.4.username %}">{% else %}<a class="mr-2">{% endif %}{{ object.contacts.all.4.username }}</a></li>
-                <li class="list-group-item">{% if object.contacts.all.5.username != None %}<a class="mr-2" href="{% url 'user-pages' object.contacts.all.5.username %}">{% else %}<a class="mr-2">{% endif %}{{ object.contacts.all.5.username }}</a></li>
+                <li class="list-group-item"><a class="mr-2" {% if object.contacts.all.4.username != None %} href="{% url 'user-pages' object.contacts.all.4.username %}" {% endif %}>{{ object.contacts.all.4.username }}</a></li>
+                <li class="list-group-item"><a class="mr-2" {% if object.contacts.all.5.username != None %} href="{% url 'user-pages' object.contacts.all.5.username %}" {% endif %}>{{ object.contacts.all.5.username }}</a></li>
               </ul>
             </div>
           </div>

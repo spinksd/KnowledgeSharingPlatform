@@ -3,18 +3,13 @@
 function showAdvancedOptions() {
     var elem = document.getElementById("AdvancedOptionsArea");
     var arrow = document.getElementById("AdvancedOptionsArrow");
-    if (elem.style.visibility === "hidden") {
+    if (elem.style.display === "none") {
       arrow.className = "fa fa-chevron-circle-down"
-      elem.style.visibility = "visible";
+      //elem.style.visibility = "visible";
+      elem.style.display = "flex";
     } else {
       arrow.className = "fa fa-chevron-circle-left"
-      elem.style.visibility = "hidden";
+      //elem.style.visibility = "hidden";
+      elem.style.display = "none";
     }
   }
-
-function updateSelec2Value() {
-  var elems = document.getElementsByClassName("select2-selection__choice");
-  for (elem in elems) {
-    elem.value = elem.innerHTML
-  }
-}

@@ -19,10 +19,10 @@
         </span>
       </div>
       <h6 class="mt-2" onclick="showAdvancedOptions()" id="AdvancedOptionsText">Advanced Options <span
-          id="AdvancedOptionsArrow"></span></h6>
+          id="AdvancedOptionsArrow" class="fa fa-chevron-circle-left"></span></h6>
     </div>
   </div>
-  <div class="form-row justify-content-center" id="AdvancedOptionsArea">
+  <div class="form-row justify-content-center" id="AdvancedOptionsArea" style="display: none;">
     <div class="form-group col-md-3">
       <label>Tags (comma separated):</label><br/>
       <input type="text" data-role="tagsinput" class="form-control" name="tags" placeholder="Add tags here...">
@@ -32,7 +32,7 @@
       <select class="form-control" name="contacts" theme="bootstrap" data-placeholder="Search contacts..."
         data-minimum-input-length="1" id="contacts_autocomplete" data-autocomplete-light-language="en"
         data-autocomplete-light-url="/contacts-autocomplete/" data-autocomplete-light-function="select2"
-        multiple="multiple" onformchange="updateSelect2Value()"></select>
+        multiple="multiple"></select>
     </div>
     <div class="form-group col-md-2">
       <label>Has Document?</label><br/>
@@ -139,7 +139,7 @@
 </div>
 
 <!-- Custom made script to hide/show advanced options for main search bar -->
-<script src="static/website/scripts.js" onload="showAdvancedOptions()"></script>
+<script src="static/website/scripts.js"></script>
 <!-- These scripts and {{ form.media }} template are required for django-taggit and select2 autocomplete respectively -->
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
