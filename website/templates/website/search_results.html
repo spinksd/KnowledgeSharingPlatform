@@ -20,25 +20,25 @@
     {% if is_paginated %}
       {% if page_obj.has_previous %}
         <!-- Link first page and previous page if this isn't the first page -->
-        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+        <a class="btn btn-outline-info mb-4" href="{{ search_url }}&page=1">First</a>
       {% endif %}
 
       <!-- Get paginator for current page and find page range. This is then used to provide links to page numbers around the current page number -->
       {% for num in page_obj.paginator.page_range %}
         <!-- Check if page number is current page and style so it's obviously the page the user's currently on -->
         {% if page_obj.number == num %}
-        <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+        <a class="btn btn-info mb-4" href="{{ search_url }}&page={{ num }}">{{ num }}</a>
         <!-- If number that the loop is currently on is within the range of -3 to +3 of current page, display links for it  -->
         {% elif num > page_obj.number|add:'-3' %}
           {% if num < page_obj.number|add:'3' %}
-            <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+            <a class="btn btn-outline-info mb-4" href="{{ search_url }}&page={{ num }}">{{ num }}</a>
           {% endif %}
         {% endif %}
       {% endfor %}
 
       {% if page_obj.has_next %}
         <!-- Link last page if this isn't the last page -->
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+        <a class="btn btn-outline-info mb-4" href="{{ search_url }}&page={{ page_obj.paginator.num_pages }}">Last</a>
       {% endif %}
 
     {% endif %}

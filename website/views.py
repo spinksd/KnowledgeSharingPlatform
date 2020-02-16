@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.paginator import Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
@@ -8,6 +9,7 @@ from dal import autocomplete
 from taggit.utils import edit_string_for_tags
 from .models import Page
 from .forms import DocumentUploadForm, CreateUpdatePageForm, AdvancedSearchForm
+import re
 
 # Had to update this to be FormView as opposed to TemplateView such that it would pick up on the form_class attribute
 # The AdvancedSearchForm holds the autocomplete widget for the autocomplete contact field in advanced search
@@ -90,13 +92,6 @@ class PageUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         # Call original function to handle the rest of the processing
         return super().form_valid(form)
 
-    # Add get_initial method to use edit_string_for_tags method
-    # This is required to get the value of the django-taggit feature (Tags area) on the update view to render correctly
-    #def get_initial(self):
-    #    initial = super().get_initial()
-    #    initial['tags'] = edit_string_for_tags(Page.tags.get_queryset())
-    #    return initial
-
     def test_func(self):
         # Get current page user is trying to access the edit page for
         page = self.get_object()
@@ -124,7 +119,9 @@ class PageDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         else:
             return False
 
-class SearchResultsView(PageListView):
+class SearchResultsView(LoginRequiredMixin, ListView):
+    model = Page
+    context_object_name = 'pages'
     template_name = 'website/search_results.html'
     ordering = ['-likes']
     paginate_by = 5
@@ -163,6 +160,14 @@ class SearchResultsView(PageListView):
         # Return matched pages to user
         return pages
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Here I add the search url of the user's current search to the page context
+        # I then use this for pagination (see in search_results.html usage of the variable {{ search_url }} )
+        # I use regex here to remove the current page number from the string (e.g. '&page=1')
+        # Which prevents the url from becoming '&page=1&page=2&page=3' etc.
+        context['search_url'] = re.sub('\&page=\d+','', self.request.get_full_path())
+        return context
 
 # Inherit from LoginRequiredMixin such that the user is redirected to the login page when attempting to access this page when not logged in
 # Also inherit from CreateView as this class is for creating a page
