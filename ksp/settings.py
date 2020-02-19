@@ -45,6 +45,10 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'crispy_forms',
     'taggit',
+    'docx',
+    'numpy',
+    'networkx',
+    'RAKE',
 ]
 
 MIDDLEWARE = [

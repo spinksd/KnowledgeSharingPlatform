@@ -28,7 +28,7 @@
       </div>
       <div class="col-2">
         <!-- If not object (i.e. page hasn't been created, show a 'create page' button, else show an 'update page' button -->
-        <button type="submit" class="btn btn-primary align-self-end">{% if not object %}Create Page {% else %} Update Page {% endif %}</button>
+        <button type="submit" class="btn btn-primary align-self-end" id="publish-page-button">{% if not object %}Create Page {% else %} Update Page {% endif %}</button>
       </div>
     </div>
     <div class="row">
@@ -39,6 +39,8 @@
           <div class="input-group mt-3 mb-3">
             <input type="text" name="title" maxlength="50" class="form-control" placeholder="Title"
               {% if form.title.value != None %} value="{{ form.title.value }}" {% endif %} required id="title">
+              {{ summary_text }}
+              {{ tags }}
           </div>
           <div class="input-group mt-3 mb-3">
             <textarea name="text" class="form-control" rows="16" placeholder="Main text" required
@@ -72,12 +74,12 @@
                         {% if form.instance.pk %}
                           <!-- If it is update page, loop through contacts and add to view -->
                           {% for contact in form.instance.contacts.all %}
-                            <option value="{{ forloop.counter }}" selected="" data-select2-id="{{ forloop.counter }}">{{ contact.username }}</option>
+                            <option value="{{ forloop.counter }}" selected="" data-select2-id="{{ forloop.counter }}" id="contact-{{ forloop.counter }}">{{ contact.username }}</option>
                           {% endfor %}
                         <!-- Else it's the create page -->
                         {% else %}
                             <!-- So add the current user as a contact -->
-                            <option value="1" selected="" data-select2-id="1">{{ request.user.username }}</option>
+                            <option value="1" selected="" data-select2-id="1" id="contact-1">{{ request.user.username }}</option>
                         {% endif %}
                     </select>
                   </div>

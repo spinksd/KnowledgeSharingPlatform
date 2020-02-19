@@ -6,10 +6,16 @@ from django.core.files.storage import FileSystemStorage
 from django.db.models import Q, Count
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, FormView
 from dal import autocomplete
+import docx
+from nltk.corpus import stopwords
+from nltk.cluster.util import cosine_distance
+import numpy as np
+import networkx as nx
+import RAKE
+import re
 from taggit.utils import edit_string_for_tags
 from .models import Page
 from .forms import DocumentUploadForm, CreateUpdatePageForm, AdvancedSearchForm
-import re
 
 # Had to update this to be FormView as opposed to TemplateView such that it would pick up on the form_class attribute
 # The AdvancedSearchForm holds the autocomplete widget for the autocomplete contact field in advanced search
@@ -66,8 +72,10 @@ class PageCreateView(LoginRequiredMixin, CreateView):
     # Get currently logged in user's profile image and description for sidebar
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['profile_img'] = self.request.user.profile.image.url
-        context['profile_desc'] = self.request.user.profile.description
+        #context['profile_img'] = self.request.user.profile.image.url
+        #context['profile_desc'] = self.request.user.profile.description
+        context['summary_text'] = self.request.session['summary_text']
+        context['tags'] = self.request.session['tags']
         return context
 
     # This specifies that the author of the page that is being created is the user who is currently logged in and submits the page creation
@@ -189,7 +197,104 @@ class DocumentUploadView(LoginRequiredMixin, CreateView):
             temp.author = request.user
             # Then save the form/page
             temp.save()
-            return redirect('home')
+            # Generate data from uploaded document
+            self.generate_document_data(request, temp.document.path)
+            #return redirect('home')
+            return redirect('create-page')
+
+    def parseDocument(self, filePath):
+        document = docx.Document(filePath)
+        fullText = []
+        for paragraph in document.paragraphs:
+            fullText.append(paragraph.text)
+        article = '\n'.join(fullText).split('. ')
+        return article
+
+    def sentence_similarity(self, sentence1, sentence2, stopwords=None):
+        if stopwords is None:
+            stopwords = []
+        sentence1 = [w.lower() for w in sentence1]
+        sentence2 = [w.lower() for w in sentence2]
+        all_words = list(set(sentence1 + sentence2))
+        vector1 = [0] * len(all_words)
+        vector2 = [0] * len(all_words)
+
+        # build the vector for the first sentence
+        for w in sentence1:
+            if w in stopwords:
+                continue
+            vector1[all_words.index(w)] += 1
+
+        # build the vector for the second sentence
+        for w in sentence2:
+            if w in stopwords:
+                continue
+            vector2[all_words.index(w)] += 1
+
+        return 1 - cosine_distance(vector1, vector2)
+
+    def build_similarity_matrix(self, sentences, stop_words):
+        # Create an empty similarity matrix
+        similarity_matrix = np.zeros((len(sentences), len(sentences)))
+        for idx1 in range(len(sentences)):
+            for idx2 in range(len(sentences)):
+                if idx1 == idx2: #ignore if both are same sentences
+                    continue 
+                similarity_matrix[idx1][idx2] = self.sentence_similarity(sentences[idx1], sentences[idx2], stop_words)
+        return similarity_matrix
+
+    def generate_text_summary(self, text, top_n=5):
+        stop_words = stopwords.words('english')
+        summary_text = []
+        
+        # Step 1 - Split text
+        sentences = []
+        for sentence in text:
+            #print(sentence)
+            sentences.append(sentence.replace("[^a-zA-Z]", " ").split(" "))        
+   
+        # Step 2 - Generate similarity matrix across sentences
+        sentence_similarity_matrix = self.build_similarity_matrix(sentences, stop_words)
+        
+        # Step 3 - Rank sentences in similarity matrix
+        sentence_similarity_graph = nx.from_numpy_array(sentence_similarity_matrix)
+        scores = nx.pagerank(sentence_similarity_graph)
+
+        # Step 4 - Sort sentences by rank and pick highest ranked sentences
+        ranked_sentence = sorted(((scores[i],s) for i,s in enumerate(sentences)), reverse=True)    
+        print("Indexes of top ranked_sentence order are ", ranked_sentence)    
+        for i in range(top_n):
+            summary_text.append(" ".join(ranked_sentence[i][1]))
+
+        # Step 5 - Return the summary text
+        #print("Summarize Text: \n", ". ".join(summary_text))
+        return ". ".join(summary_text)
+        
+    def generate_tags(self, text):
+        Rake = RAKE.Rake(RAKE.SmartStopList())
+        keywords = Rake.run(str(text) , minCharacters = 3, maxWords = 3, minFrequency = 2)
+        #print(keywords)
+        tags = []
+        #for keyword in keywords:
+        # Limit to 6 tags
+        limit = 6
+        for index, keyword in zip(range(limit), keywords):
+            tags.append(keyword[0])
+        #print(tags)
+
+        return tags
+
+    def generate_document_data(self, request, filePath):
+        article = self.parseDocument(filePath)
+        # Generate tags
+        request.session['tags'] = self.generate_tags(article)
+
+        # Generate document summary
+        summary_description_num_sentences = 10
+        if len(article) < summary_description_num_sentences:
+            summary_description_num_sentences = len(article.split)
+        request.session['summary_text'] = self.generate_text_summary(article, summary_description_num_sentences)
+
 
 # Inherits list view as page effectively has a 'list' of latest pages
 class TopRatedListView(LoginRequiredMixin, ListView):

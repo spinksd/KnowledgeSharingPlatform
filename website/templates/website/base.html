@@ -37,14 +37,14 @@
         <div class="collapse navbar-collapse" id="navbarToggle">
           <div class="navbar-nav mr-auto">
             {% if user.is_authenticated %}
-            <a class="nav-item nav-link" href="{% url 'home' %}">Home</a>
+            <a class="nav-item nav-link" href="{% url 'home' %}" id="nav-home">Home</a>
             {% else %}
-            <a class="nav-item nav-link" href="{% url 'login' %}">Home</a>
+            <a class="nav-item nav-link" href="{% url 'login' %}" id="nav-home">Home</a>
             {% endif %}
-            <a class="nav-item nav-link" href="{% url 'about' %}">About</a>
+            <a class="nav-item nav-link" href="{% url 'about' %}" id="nav-about">About</a>
           </div>
           {% if user.is_authenticated %}
-          <form class="form-inline my-2 my-lg-0" action="{% url 'search-results' %}" method="get">
+          <form class="form-inline my-2 my-lg-0" action="{% url 'search-results' %}" method="get" id="nav-search">
             <input name="query" type="text" class="form-control mr-sm-2" type="search" placeholder="Search..."
               aria-label="Search">
             <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
@@ -54,13 +54,13 @@
             <!-- Django provides is_authenticated method to see if user is logged in -->
             <!-- As per BDD requirements/scenarios, user should see different navbar choices depending on whether they are logged in or not -->
             {% if user.is_authenticated %}
-            <a class="nav-item nav-link" href="{% url 'create-page' %}">Create Page</a>
-            <a class="nav-item nav-link" href="{% url 'upload-document' %}">Upload Document</a>
-            <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
-            <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
+            <a class="nav-item nav-link" href="{% url 'create-page' %}" id="nav-create-page">Create Page</a>
+            <a class="nav-item nav-link" href="{% url 'upload-document' %}" id="nav-upload-document">Upload Document</a>
+            <a class="nav-item nav-link" href="{% url 'profile' %}" id="nav-profile">Profile</a>
+            <a class="nav-item nav-link" href="{% url 'logout' %}" id="nav-logout">Logout</a>
             {% else %}
-            <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
-            <a class="nav-item nav-link" href="{% url 'register' %}">Sign Up</a>
+            <a class="nav-item nav-link" href="{% url 'login' %}" id="nav-login">Login</a>
+            <a class="nav-item nav-link" href="{% url 'register' %}" id="nav-signup">Sign Up</a>
             {% endif %}
           </div>
         </div>

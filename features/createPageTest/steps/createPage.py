@@ -10,6 +10,7 @@ def set_create_url(context):
 
 @given('I am not logged in')
 def check_not_logged_in(context):
+    context.b
     try:
         login_option = context.browser.find_element_by_id('nav-login')
     except NoSuchElementException:
