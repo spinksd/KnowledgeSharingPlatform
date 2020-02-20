@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.core.paginator import Paginator
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
+from django.core.paginator import Paginator
 from django.db.models import Q, Count
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, FormView
 from dal import autocomplete
@@ -15,7 +16,7 @@ import RAKE
 import re
 from taggit.utils import edit_string_for_tags
 from .models import Page
-from .forms import DocumentUploadForm, CreateUpdatePageForm, AdvancedSearchForm
+from .forms import UploadFileForm, CreateUpdatePageForm, AdvancedSearchForm
 
 # Had to update this to be FormView as opposed to TemplateView such that it would pick up on the form_class attribute
 # The AdvancedSearchForm holds the autocomplete widget for the autocomplete contact field in advanced search
@@ -72,10 +73,15 @@ class PageCreateView(LoginRequiredMixin, CreateView):
     # Get currently logged in user's profile image and description for sidebar
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        #context['profile_img'] = self.request.user.profile.image.url
-        #context['profile_desc'] = self.request.user.profile.description
-        context['summary_text'] = self.request.session['summary_text']
-        context['tags'] = self.request.session['tags']
+        # Check if user has just uploaded a document and set variables appropriately if they have
+        if self.request.session.get('summary_text', None) is not None:
+            context['summary_text'] = self.request.session['summary_text']
+            # Delete session variables so they doesn't persist
+            # Then if user goes to another page and back to the create page, the previously generated text isn't populated in the create page
+            del self.request.session['summary_text']
+        if self.request.session.get('tags', None) is not None:
+            context['tags'] = self.request.session['tags']
+            del self.request.session['tags']
         return context
 
     # This specifies that the author of the page that is being created is the user who is currently logged in and submits the page creation
@@ -155,7 +161,7 @@ class SearchResultsView(LoginRequiredMixin, ListView):
             # It's also possible to use '|=' to specify another 'OR' Q object to further filter on
             filters &= Q(tags__name__in=tags)
 
-        # If user has speicified any contacts, filter pages on those tags
+        # If user has specified any contacts, filter pages on those tags
         if contacts:
             # The GET request passes the id's (primary key) of the contacts in as a list of strings
             # The below converts it to a list of integers
@@ -182,24 +188,28 @@ class SearchResultsView(LoginRequiredMixin, ListView):
 class DocumentUploadView(LoginRequiredMixin, CreateView):
     model = Page
     template_name = 'website/upload_document.html'
-    fields = []
 
     def get(self, request):
-        form = DocumentUploadForm()
+        #form = DocumentUploadForm()
+        form = UploadFileForm()
         return render(request, 'website/upload_document.html', {'form': form})
 
     def post(self, request):
-        form = DocumentUploadForm(request.POST, request.FILES)
+        #form = DocumentUploadForm(request.POST, request.FILES)
+        form = UploadFileForm(request.POST, request.FILES)
+        # Check form is valid and get the required data from form if it is
         if form.is_valid():
-            # Assign form to a temporary field
-            temp = form.save(commit=False)
-            # So that I can add user to the saved form in order to comply with the NOT NULL constraint on the author id of the page
-            temp.author = request.user
-            # Then save the form/page
-            temp.save()
+            # Loop through files (assuming only one is uploaded, else this will only parse the last one)
+            for filename, file in request.FILES.items():
+                document = request.FILES[filename]
+                document_name = request.FILES[filename].name
+            document_write_path = settings.MEDIA_ROOT + document_name
+            with open(document_write_path, 'wb+') as destination:
+                for chunk in document.chunks():
+                    destination.write(chunk)
             # Generate data from uploaded document
-            self.generate_document_data(request, temp.document.path)
-            #return redirect('home')
+            self.generate_document_data(request, document_write_path)
+            # Direct user to create-page with fields populated with generated data
             return redirect('create-page')
 
     def parseDocument(self, filePath):
@@ -250,7 +260,6 @@ class DocumentUploadView(LoginRequiredMixin, CreateView):
         # Step 1 - Split text
         sentences = []
         for sentence in text:
-            #print(sentence)
             sentences.append(sentence.replace("[^a-zA-Z]", " ").split(" "))        
    
         # Step 2 - Generate similarity matrix across sentences
@@ -261,27 +270,21 @@ class DocumentUploadView(LoginRequiredMixin, CreateView):
         scores = nx.pagerank(sentence_similarity_graph)
 
         # Step 4 - Sort sentences by rank and pick highest ranked sentences
-        ranked_sentence = sorted(((scores[i],s) for i,s in enumerate(sentences)), reverse=True)    
-        print("Indexes of top ranked_sentence order are ", ranked_sentence)    
+        ranked_sentence = sorted(((scores[i],s) for i,s in enumerate(sentences)), reverse=True)       
         for i in range(top_n):
             summary_text.append(" ".join(ranked_sentence[i][1]))
 
         # Step 5 - Return the summary text
-        #print("Summarize Text: \n", ". ".join(summary_text))
         return ". ".join(summary_text)
         
     def generate_tags(self, text):
         Rake = RAKE.Rake(RAKE.SmartStopList())
         keywords = Rake.run(str(text) , minCharacters = 3, maxWords = 3, minFrequency = 2)
-        #print(keywords)
         tags = []
-        #for keyword in keywords:
         # Limit to 6 tags
         limit = 6
         for index, keyword in zip(range(limit), keywords):
-            tags.append(keyword[0])
-        #print(tags)
-
+            tags.append(keyword[0] + ',')
         return tags
 
     def generate_document_data(self, request, filePath):

@@ -4,16 +4,19 @@ from dal import autocomplete
 from taggit.utils import edit_string_for_tags
 from .models import Page
 
-class DocumentUploadForm(forms.ModelForm):
-    class Meta:
-        model = Page
-        fields = ['document']
+#class DocumentUploadForm(forms.ModelForm):
+#    class Meta:
+#        model = Page
+#        fields = ['document']
+
+class UploadFileForm(forms.Form):
+    file = forms.FileField()
 
 class CreateUpdatePageForm(forms.ModelForm):
 
     class Meta:
         model = Page
-        fields = ['title', 'description', 'text', 'contacts', 'tags']
+        fields = ['title', 'summary', 'main_text', 'contacts', 'tags']
         widgets = {
             'contacts': autocomplete.ModelSelect2Multiple(url='contacts-autocomplete', attrs={
                 # Set a placeholder

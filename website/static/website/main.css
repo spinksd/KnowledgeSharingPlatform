@@ -122,3 +122,7 @@ body {
   max-width: 96px;
   max-height: 96px;
 }
+
+pre {
+  white-space: pre-wrap;
+}

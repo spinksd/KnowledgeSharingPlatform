@@ -39,13 +39,31 @@
           <div class="input-group mt-3 mb-3">
             <input type="text" name="title" maxlength="50" class="form-control" placeholder="Title"
               {% if form.title.value != None %} value="{{ form.title.value }}" {% endif %} required id="title">
-              {{ summary_text }}
-              {{ tags }}
+          </div>
+          <!-- Check if user has been directed here after uploading a document -->
+          {% if summary_text != None %}
+          <div class="row">
+          <div class="col-7 input-group mt-3 mb-3">
+            <textarea name="summary" class="form-control" rows="16" placeholder="Summary text" required
+              id="summary">{{ summary_text }}</textarea>
+          </div>
+          <a class="col-5 input-group mt-3 mb-3 justify-content-center border" href="">
+            <div class="align-self-center">
+              <img src="{% static 'website/icons/download-document.png' %}" alt="Card image cap" >
+              <h3><br/>Download Document</h3>
+            </div>
+          </a>
+        </div>
+          <!-- Else display regular create / edit page-->
+          {% else %}
+          <div class="input-group mt-3 mb-3">
+            <textarea name="summary" class="form-control" rows="2" placeholder="Summary of page" id="summary">{% if form.summary.value != None %} {{ form.summary.value }} {% endif %}</textarea>
           </div>
           <div class="input-group mt-3 mb-3">
-            <textarea name="text" class="form-control" rows="16" placeholder="Main text" required
-              id="text">{% if form.text.value != None %} {{ form.text.value }} {% endif %}</textarea>
+            <textarea name="main_text" class="form-control" rows="13" placeholder="Main text" required
+              id="main_text">{% if form.main_text.value != None %} {{ form.main_text.value }} {% endif %}</textarea>
           </div>
+          {% endif %}              
         </div>
         <div class="row">
           <div class="col border">
@@ -54,7 +72,7 @@
                 <ul class="list-group">
                   <div class="form-group">
                     <label>Tags (maximum 6, comma separated):</label><br/>
-                    <input type="text" data-role="tagsinput" class="form-control" value="{{ form.tags.value|form_tag_value_to_tags }}" name="tags" placeholder="Add tags here...">
+                    <input type="text" data-role="tagsinput" class="form-control" {% if tags != None %} value="{{ tags|form_tag_value_to_tags }}" {% else %} value="{{ form.tags.value|form_tag_value_to_tags }}" {% endif %} name="tags" placeholder="Add tags here...">
                   </div>
                 </ul>
               </div>
