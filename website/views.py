@@ -2,9 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
-from django.core.files.storage import FileSystemStorage
+from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
+from django.http import HttpResponse, FileResponse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, FormView
 from dal import autocomplete
 import docx
@@ -12,6 +13,7 @@ from nltk.corpus import stopwords
 from nltk.cluster.util import cosine_distance
 import numpy as np
 import networkx as nx
+import os
 import RAKE
 import re
 from taggit.utils import edit_string_for_tags
@@ -74,10 +76,13 @@ class PageCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Check if user has just uploaded a document and set variables appropriately if they have
+        # Deletes session variables so they doesn't persist
+        # Then if user goes to another page and back to the create page, the previously generated text isn't populated in the create page
+        if self.request.session.get('title', None) is not None:
+            context['title'] = self.request.session['title']
+            del self.request.session['title']
         if self.request.session.get('summary_text', None) is not None:
             context['summary_text'] = self.request.session['summary_text']
-            # Delete session variables so they doesn't persist
-            # Then if user goes to another page and back to the create page, the previously generated text isn't populated in the create page
             del self.request.session['summary_text']
         if self.request.session.get('tags', None) is not None:
             context['tags'] = self.request.session['tags']
@@ -88,6 +93,10 @@ class PageCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         # Specify author as current user (This is the neatest way of setting the author - if author is not specified then Django throws an integrity error as the NOT NULL constraint for author is failed)
         form.instance.author = self.request.user
+        # Specify form document
+        if self.request.session.get('document_path', None) is not None:
+            form.instance.document = self.request.session['document_path']
+            del self.request.session['document_path']
         # Call original function to handle the rest of the processing
         return super().form_valid(form)
         
@@ -202,22 +211,47 @@ class DocumentUploadView(LoginRequiredMixin, CreateView):
             # Loop through files (assuming only one is uploaded, else this will only parse the last one)
             for filename, file in request.FILES.items():
                 document = request.FILES[filename]
-                document_name = request.FILES[filename].name
-            document_write_path = settings.MEDIA_ROOT + document_name
-            with open(document_write_path, 'wb+') as destination:
-                for chunk in document.chunks():
-                    destination.write(chunk)
+            
+            # Define location to save the folder
+            save_folder = default_storage.location + '/documents/'
+            # Check save folder exists, else create if not (if folder doesn't exist, receive an error of suspicious document activity)
+            if not os.path.exists(save_folder):
+                os.makedirs(save_folder)
+            # Set full path of document
+            save_path = save_folder + document.name
+            # Save the document to the filesystem
+            default_storage.save(save_path, document)
+
             # Generate data from uploaded document
-            self.generate_document_data(request, document_write_path)
-            # Direct user to create-page with fields populated with generated data
+            title = re.sub('\.\w+', '', os.path.basename(save_path))
+            self.generate_document_data(request, save_path)
+            # Add title and document path to session for create-page (can't save document as session variable as it's in memory at this point and is unserialisable)
+            request.session['title'] = title
+            request.session['document_path'] = save_path
+            # Direct user to create-page having set session variables with generated data
             return redirect('create-page')
 
     def parseDocument(self, filePath):
-        document = docx.Document(filePath)
         fullText = []
-        for paragraph in document.paragraphs:
-            fullText.append(paragraph.text)
-        article = '\n'.join(fullText).split('. ')
+        filename, file_extension = os.path.splitext(filePath)
+        if file_extension == '.docx':
+            document = docx.Document(filePath)
+            for paragraph in document.paragraphs:
+                fullText.append(paragraph.text)
+                print('fulltext = ' + str(fullText))
+            article = '\n'.join(fullText).split('. ')
+            print('article = ' + str(article))
+        #elif file_extension == '.pdf':
+            #document = 
+        elif file_extension == '.txt':
+            with open(filePath, 'r') as file:
+                fullText.append(file.read())
+            #print('fulltext = ' + str(fullText))
+            article = fullText[0].split('. ')
+            print('article = ' + str(article))
+        #else:
+        
+        #article = '\n'.join(fullText).split('. ')
         return article
 
     def sentence_similarity(self, sentence1, sentence2, stopwords=None):
@@ -275,7 +309,7 @@ class DocumentUploadView(LoginRequiredMixin, CreateView):
             summary_text.append(" ".join(ranked_sentence[i][1]))
 
         # Step 5 - Return the summary text
-        return ". ".join(summary_text)
+        return ". ".join(summary_text) + "."
         
     def generate_tags(self, text):
         Rake = RAKE.Rake(RAKE.SmartStopList())
@@ -328,6 +362,12 @@ class ContactsAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView)
         
         # Return filtered set of users
         return qs
+
+def download_document(request, pk):
+    # Get page object
+    page = get_object_or_404(Page, id=pk)
+    response = FileResponse(open(page.document.name, 'rb'), as_attachment=True)
+    return response
 
 def like_page(request, pk):
     # Get page object

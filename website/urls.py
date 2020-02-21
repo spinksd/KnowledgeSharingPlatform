@@ -22,4 +22,5 @@ urlpatterns = [
     path('most_recent/', PageListView.as_view(), name='most-recent'),
     path('about/', views.about, name='about'),
     path('contacts-autocomplete/', ContactsAutocomplete.as_view(), name='contacts-autocomplete'),
+    path('page/<int:pk>/download', views.download_document, name='download')
 ]

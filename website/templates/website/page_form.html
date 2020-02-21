@@ -21,14 +21,15 @@
 {% endif %}
 
 <main role="main">
-  <form method="POST">
+  <form method="POST" enctype="multipart/form-data">
     <div class="row form-top-submit">
       <div class="col-10">
         <p>Click on the different sections of the page to edit them!</p>
       </div>
       <div class="col-2">
         <!-- If not object (i.e. page hasn't been created, show a 'create page' button, else show an 'update page' button -->
-        <button type="submit" class="btn btn-primary align-self-end" id="publish-page-button">{% if not object %}Create Page {% else %} Update Page {% endif %}</button>
+        <button type="submit" class="btn btn-primary align-self-end" id="publish-page-button">{% if not object %}Create
+          Page {% else %} Update Page {% endif %}</button>
       </div>
     </div>
     <div class="row">
@@ -38,32 +39,33 @@
         <div class="mr-auto" id="form-section">
           <div class="input-group mt-3 mb-3">
             <input type="text" name="title" maxlength="50" class="form-control" placeholder="Title"
-              {% if form.title.value != None %} value="{{ form.title.value }}" {% endif %} required id="title">
+              {% if form.title.value != None %} value="{{ form.title.value }}" {% elif title != None %} value="{{ title }}" {% endif %} required id="title">
           </div>
-          <!-- Check if user has been directed here after uploading a document -->
-          {% if summary_text != None %}
+          <!-- Check if user has been directed here after uploading a document or is editing an existing form with a document-->
+          {% if summary_text != None or form.document.name %}
           <div class="row">
-          <div class="col-7 input-group mt-3 mb-3">
-            <textarea name="summary" class="form-control" rows="16" placeholder="Summary text" required
-              id="summary">{{ summary_text }}</textarea>
-          </div>
-          <a class="col-5 input-group mt-3 mb-3 justify-content-center border" href="">
-            <div class="align-self-center">
-              <img src="{% static 'website/icons/download-document.png' %}" alt="Card image cap" >
-              <h3><br/>Download Document</h3>
+            <div class="col-7 input-group mt-3 mb-3">
+              <textarea name="summary" class="form-control" rows="16" placeholder="Summary text" required
+                id="summary">{% if summary_text != None %} {{ summary_text }} {% else %} {{ form.summary.value }} {% endif %}</textarea>
             </div>
-          </a>
-        </div>
-          <!-- Else display regular create / edit page-->
+            <a class="col-5 input-group mt-3 mb-3 justify-content-center border" href="">
+              <div class="align-self-center">
+                <img src="{% static 'website/icons/download-document.png' %}" alt="Card image cap">
+                <h3><br/>Download Document</h3>
+              </div>
+            </a>
+          </div>
+          <!-- Else display regular create / edit page that just has text documentation -->
           {% else %}
           <div class="input-group mt-3 mb-3">
-            <textarea name="summary" class="form-control" rows="2" placeholder="Summary of page" id="summary">{% if form.summary.value != None %} {{ form.summary.value }} {% endif %}</textarea>
+            <textarea name="summary" class="form-control" rows="2" placeholder="Summary of page"
+              id="summary">{% if form.summary.value != None %} {{ form.summary.value }} {% endif %}</textarea>
           </div>
           <div class="input-group mt-3 mb-3">
             <textarea name="main_text" class="form-control" rows="13" placeholder="Main text" required
               id="main_text">{% if form.main_text.value != None %} {{ form.main_text.value }} {% endif %}</textarea>
           </div>
-          {% endif %}              
+          {% endif %}
         </div>
         <div class="row">
           <div class="col border">
@@ -71,8 +73,11 @@
               <div class="col">
                 <ul class="list-group">
                   <div class="form-group">
-                    <label>Tags (maximum 6, comma separated):</label><br/>
-                    <input type="text" data-role="tagsinput" class="form-control" {% if tags != None %} value="{{ tags|form_tag_value_to_tags }}" {% else %} value="{{ form.tags.value|form_tag_value_to_tags }}" {% endif %} name="tags" placeholder="Add tags here...">
+                    <label>Tags (maximum 6, comma separated):</label><br />
+                    <input type="text" data-role="tagsinput" class="form-control" {% if tags != None %}
+                      value="{{ tags|form_tag_value_to_tags }}" {% else %}
+                      value="{{ form.tags.value|form_tag_value_to_tags }}" {% endif %} name="tags"
+                      placeholder="Add tags here...">
                   </div>
                 </ul>
               </div>
@@ -83,22 +88,24 @@
               <div class="col">
                 <ul class="list-group">
                   <div class="form-group">
-                    <label>Contacts (maximum 6):</label><br/>
+                    <label>Contacts (maximum 6):</label><br />
                     <select class="form-control" name="contacts" theme="bootstrap" data-placeholder="Search contacts..."
                       data-minimum-input-length="1" id="contacts_autocomplete" data-autocomplete-light-language="en"
                       data-autocomplete-light-url="/contacts-autocomplete/" data-autocomplete-light-function="select2"
                       multiple="multiple">
-                        <!-- Check if form has an instance (i.e. this is an update page) -->
-                        {% if form.instance.pk %}
-                          <!-- If it is update page, loop through contacts and add to view -->
-                          {% for contact in form.instance.contacts.all %}
-                            <option value="{{ forloop.counter }}" selected="" data-select2-id="{{ forloop.counter }}" id="contact-{{ forloop.counter }}">{{ contact.username }}</option>
-                          {% endfor %}
-                        <!-- Else it's the create page -->
-                        {% else %}
-                            <!-- So add the current user as a contact -->
-                            <option value="1" selected="" data-select2-id="1" id="contact-1">{{ request.user.username }}</option>
-                        {% endif %}
+                      <!-- Check if form has an instance (i.e. this is an update page) -->
+                      {% if form.instance.pk %}
+                      <!-- If it is update page, loop through contacts and add to view -->
+                      {% for contact in form.instance.contacts.all %}
+                      <option value="{{ forloop.counter }}" selected="" data-select2-id="{{ forloop.counter }}"
+                        id="contact-{{ forloop.counter }}">{{ contact.username }}</option>
+                      {% endfor %}
+                      <!-- Else it's the create page -->
+                      {% else %}
+                      <!-- So add the current user as a contact -->
+                      <option value="1" selected="" data-select2-id="1" id="contact-1">{{ request.user.username }}
+                      </option>
+                      {% endif %}
                     </select>
                   </div>
                 </ul>
@@ -114,7 +121,8 @@
           <h3>{{ request.user.username }}</h3>
         </div>
         <div class="row justify-content-center mb-5">
-          <img class="rounded-circle article-img" src="{{ request.user.profile.image.url }}" style="width: 60%; height: 60%">
+          <img class="rounded-circle article-img" src="{{ request.user.profile.image.url }}"
+            style="width: 60%; height: 60%">
         </div>
         <div class="row justify-content-center mb-3">
           <h6>About this author:</h6>

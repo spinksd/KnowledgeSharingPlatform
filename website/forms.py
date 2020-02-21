@@ -16,7 +16,7 @@ class CreateUpdatePageForm(forms.ModelForm):
 
     class Meta:
         model = Page
-        fields = ['title', 'summary', 'main_text', 'contacts', 'tags']
+        fields = ['title', 'summary', 'main_text', 'document', 'tags', 'contacts']
         widgets = {
             'contacts': autocomplete.ModelSelect2Multiple(url='contacts-autocomplete', attrs={
                 # Set a placeholder
