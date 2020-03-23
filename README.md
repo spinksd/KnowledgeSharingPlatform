@@ -20,3 +20,6 @@ python manage.py runserver
 ```
 
 This will run Django and the platform will be available on the user's computer on the url: ```localhost:8000```
+
+Example documents to test the upload and natural language processing functionality can be found in the folder:
+> nlp-document-examples 
