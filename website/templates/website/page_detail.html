@@ -36,6 +36,11 @@
         </div>
         <!-- Else if page doesn't have a document, simply display documented text/page -->
         {% else %}
+          {% if object.summary %}
+          <div class="mt-3 mb-3 border">
+            <pre>{{ object.summary }}</pre>
+          </div>
+          {% endif %}
         <div class="mt-3 mb-3 border" style="min-height: 350px;">
           <pre>{{ object.main_text }}</pre>
         </div>

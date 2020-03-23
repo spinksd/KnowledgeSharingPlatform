@@ -1,4 +1,5 @@
 {% extends "website/extended_base.html" %}
+{% load static %}
 {% block content-extended %}
     {% for page in pages %}
         <article class="media content-section">
@@ -6,13 +7,18 @@
           <div class="media-body">
               <div class="article-metadata">
                 <a class="mr-2" href="{% url 'user-pages' page.author.username %}">{{ page.author }}</a>
-                <small class="text-muted">{{ page.date_posted|date:"F d, Y" }}</small>
+                <small class="text-muted mr-3">{{ page.date_posted|date:"F d, Y" }}</small>
                 <!-- Above prints the date posted in format: Month (F) Day number (d), Year (Y)
                      as per documentation: https://docs.djangoproject.com/en/2.0/ref/templates/builtins/#date -->
+              {% if page.document %}
+              <img src="{% static 'website/icons/download-document.png' %}" alt="Card image cap" width="3%" height="3%">
+              {% endif %}
               </div>
               <!-- Link page title to page url by passing in primary key of the page to url routing -->
               <h2><a class="article-title" href="{% url 'published-page' page.id %}">{{ page.title }}</a></h2>
-              <p class="article-content">{{ page.content }}</p>
+              <!-- Show page summary, but limit to 200 chars to keep page size reasonable and view neat and tidy -->
+              <p class="article-content">{{ page.summary|truncatechars:200 }}</p>
+              <!-- Show number of likes page has -->
               <p class="text-muted mt-1 mb-1"># Likes: {{ page.total_likes }}</p>
             </div>
         </article>

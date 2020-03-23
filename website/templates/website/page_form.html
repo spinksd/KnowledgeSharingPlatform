@@ -42,7 +42,7 @@
               {% if form.title.value != None %} value="{{ form.title.value }}" {% elif title != None %} value="{{ title }}" {% endif %} required id="title">
           </div>
           <!-- Check if user has been directed here after uploading a document or is editing an existing form with a document-->
-          {% if summary_text != None or form.document.name %}
+          {% if summary_text != None or object.document.name %}
           <div class="row">
             <div class="col-7 input-group mt-3 mb-3">
               <textarea name="summary" class="form-control" rows="16" placeholder="Summary text" required

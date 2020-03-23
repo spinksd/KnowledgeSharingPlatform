@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
@@ -155,10 +156,11 @@ class SearchResultsView(LoginRequiredMixin, ListView):
         query = self.request.GET.get('query', None)
         tags = self.request.GET.get('tags', None)
         contacts = self.request.GET.getlist('contacts', None)
+        hasDocument = self.request.GET.getlist('hasDocument', None)
 
         if query is not None:
             # Add first filters checking if the title OR description OR main text of the page contains the text the user's searching for
-            filters = Q(title__icontains=query) | Q(description__icontains=query) | Q(text__icontains=query)
+            filters = Q(title__icontains=query) | Q(summary__icontains=query) | Q(main_text__icontains=query)
         else:
             filters = None
 
@@ -170,13 +172,26 @@ class SearchResultsView(LoginRequiredMixin, ListView):
             # It's also possible to use '|=' to specify another 'OR' Q object to further filter on
             filters &= Q(tags__name__in=tags)
 
-        # If user has specified any contacts, filter pages on those tags
+        # If user has specified any contacts, filter pages on those contacts
         if contacts:
             # The GET request passes the id's (primary key) of the contacts in as a list of strings
             # The below converts it to a list of integers
             contacts = [int(i) for i in contacts]
             # We then use the contact list of integers (primary keys) to check if any of the pages have that user as a contact
             filters &= Q(contacts__pk__in=contacts)
+
+        # If user has specified page must have a document attachment, filter pages on those that have documents
+        if hasDocument:
+            # Toggle is returned as an array value.
+            # Value is always in position 0 of array, so retrieve text value from array
+            hasDocument = hasDocument[0]
+            # Check value of whether user wants document in pages for search results and filter accordingly
+            if hasDocument == 'no':
+                # Document is stored in DB as a char field representing the path to the file, so check if path is not populated
+                filters &= Q(document='')
+            elif hasDocument == 'yes':
+                # The tilde symbol represents a 'negated' query (i.e. a 'NOT'), so this searches for documents that have the path populated
+                filters &= ~Q(document='')
         
         # Get pages that match all filters
         pages = Page.objects.filter(filters).distinct()
@@ -199,12 +214,10 @@ class DocumentUploadView(LoginRequiredMixin, CreateView):
     template_name = 'website/upload_document.html'
 
     def get(self, request):
-        #form = DocumentUploadForm()
         form = UploadFileForm()
         return render(request, 'website/upload_document.html', {'form': form})
 
     def post(self, request):
-        #form = DocumentUploadForm(request.POST, request.FILES)
         form = UploadFileForm(request.POST, request.FILES)
         # Check form is valid and get the required data from form if it is
         if form.is_valid():
@@ -225,6 +238,10 @@ class DocumentUploadView(LoginRequiredMixin, CreateView):
             # Generate data from uploaded document
             title = re.sub('\.\w+', '', os.path.basename(save_path))
             self.generate_document_data(request, save_path)
+            if request.session['error'] is True:
+                default_storage.delete(save_path)
+                messages.add_message(self.request, messages.WARNING, 'Invalid file type! Only word documents (.docx) and text files (.txt) can be uploaded.')
+                return redirect('upload-document')
             # Add title and document path to session for create-page (can't save document as session variable as it's in memory at this point and is unserialisable)
             request.session['title'] = title
             request.session['document_path'] = save_path
@@ -238,9 +255,9 @@ class DocumentUploadView(LoginRequiredMixin, CreateView):
             document = docx.Document(filePath)
             for paragraph in document.paragraphs:
                 fullText.append(paragraph.text)
-                print('fulltext = ' + str(fullText))
+                #print('fulltext = ' + str(fullText))
             article = '\n'.join(fullText).split('. ')
-            print('article = ' + str(article))
+            #print('article = ' + str(article))
         #elif file_extension == '.pdf':
             #document = 
         elif file_extension == '.txt':
@@ -248,8 +265,10 @@ class DocumentUploadView(LoginRequiredMixin, CreateView):
                 fullText.append(file.read())
             #print('fulltext = ' + str(fullText))
             article = fullText[0].split('. ')
-            print('article = ' + str(article))
-        #else:
+            #print('article = ' + str(article))
+        # If file extension is not docx or txt then set article to invalid to pass error processing to calling function
+        else:
+            article = 'invalid'
         
         #article = '\n'.join(fullText).split('. ')
         return article
@@ -323,6 +342,12 @@ class DocumentUploadView(LoginRequiredMixin, CreateView):
 
     def generate_document_data(self, request, filePath):
         article = self.parseDocument(filePath)
+        # Check if article was parsed successfully (whether file extension was valid)
+        if article == 'invalid':
+            request.session['error'] = True
+            return
+        # Else document has been successfully parsed - set this so check for session variable doesn't error because variable doesn't exist
+        request.session['error'] = False
         # Generate tags
         request.session['tags'] = self.generate_tags(article)
 

@@ -38,6 +38,8 @@ class CreateUpdatePageForm(forms.ModelForm):
         contacts = self.cleaned_data.get('contacts', [])
         if len(contacts) > 6:
             raise forms.ValidationError('Invalid number of contacts. Can\'t have more than 6 contacts!', code='invalid')
+        elif len(contacts) < 1:
+            raise forms.ValidationError('Invalid number of contacts. Must have at least 1 contact!', code='invalid')
         return contacts
 
 # This is a form to add autocomplete functionality to the contacts field in the advanced search on the home page
