@@ -74,7 +74,7 @@ Twisted==17.9.0
 typed-ast==1.4.0
 ufw==0.36
 unattended-upgrades==0.1
-urllib3==1.25.7
+urllib3==1.25.8
 virtualenv==16.7.8
 wrapt==1.11.2
 zope.interface==4.3.2
